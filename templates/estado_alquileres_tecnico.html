@@ -1,0 +1,139 @@
+{% extends "base_tecnico.html" %}
+{% load staticfiles %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.css' %}">	
+{% block divcentro %}
+
+<table >
+	<tr>
+	    <td>
+		    	<div class="alert" role="alert" style="background-color:#F8FA89;" onclick="mostrarDiv('div_reservado')" id="alquiler_reservado"> 
+				  <table id='tabla_reservado'>
+		  				<tr> 
+		  					<td id="estado_alquiler_equipo">Laser Candela</td>
+		  				</tr>
+		  				<tr>
+		  					<td id="estado_alquiler">Reservado</td>
+		  				</tr>
+		    		</table>
+				</div>
+	    </td>
+	    <td style="padding-left: 10px;">
+	    		<div class="alert" role="alert" style="background-color:#DBF0EE; color:black; display: none;" id="div_reservado">
+	    			<table>
+		  				<tr> 
+		  					<td><b>Desde: </b></td>
+		  					<td> 31/10/2018</td>
+		  				</tr>
+		  				<tr>
+		  					<td><b>Hasta:  </b></td>
+		  					<td>30/11/2018</td>
+		  				</tr>
+		  				<tr>
+		  					<td><b>Precio:  </b></td>
+		  					<td>$ 30000</td>
+		  				</tr>
+		    		</table>
+	    		</div> 
+	    </td>
+	    <td style="padding-left: 10px;"> <button type="button" class="btn btn-success" onclick="confirmar('alquiler_reservado', 'tabla_reservado')">Confirmar</button>	
+	    </td>
+	    <td style="padding-left: 10px;"> <button type="button" class="btn btn-danger" onclick="cancelar('alquiler_reservado', 'tabla_reservado')">Cancelar</button>	
+	    </td>
+	 </tr>
+	 <tr>
+	    <td>
+		    	<div class="alert" role="alert" style="background-color:#89FABE;" onclick="mostrarDiv('div_confirmado')" id="alquiler_confirmado"> 
+				  <table id='tabla_confirmado'>
+		  				<tr> 
+		  					<td id="estado_alquiler_equipo">Venus Legacy</td>
+		  				</tr>
+		  				<tr>
+		  					<td id="estado_alquiler">Confirmado</td>
+		  				</tr>
+		    		</table>
+				</div>
+	    </td>
+	    <td style="padding-left: 10px;">
+	    		<div>
+	    			<div class="alert" role="alert" style="background-color:#DBF0EE; color:black; display: none;" id="div_confirmado">
+	    			<table>
+		  				<tr> 
+		  					<td><b>Desde: </b></td>
+		  					<td> 31/10/2018</td>
+		  				</tr>
+		  				<tr>
+		  					<td><b>Hasta:  </b></td>
+		  					<td>15/11/2018</td>
+		  				</tr>
+		  				<tr>
+		  					<td><b>Precio:  </b></td>
+		  					<td>$ 12000</td>
+		  				</tr>
+		    		</table>
+	    		</div> 
+	    		</div> 
+	    </td>
+	    <td style="padding-left: 10px;"> <button type="button" class="btn btn-danger" onclick="cancelar('alquiler_confirmado', 'tabla_confirmado')">Cancelar</button>	
+	    </td>
+	 </tr>
+	 <tr>
+	    <td>
+	    	<div class="alert" role="alert" style="background-color:#86FA88;"> 
+			  <table>
+	  				<tr> 
+	  					<td id="estado_alquiler_equipo">Laser Candela</td>
+	  				</tr>
+	  				<tr>
+	  					<td id="estado_alquiler">En Curso</td>
+	  				</tr>
+	    		</table>
+			</div>
+	    </td>
+	    <td>
+	    		<div>
+	    		
+	    		</div> 
+	    </td>
+	 </tr>
+	 <tr>
+	    <td>
+		    	<div class="alert" role="alert" style="background-color:#FA8F86;"> 
+				  <table id="cancelado">
+		  				<tr> 
+		  					<td id="estado_alquiler_equipo">Venus Legacy</td>
+		  				</tr>
+		  				<tr>
+		  					<td id="estado_alquiler">Cancelado</td>
+		  				</tr>
+		    		</table>
+				</div>
+	    </td>
+	    <td>
+	    		<div>
+	    		
+	    		</div> 
+	    </td>
+	 </tr>
+	 <tr>
+	    <td>
+		    	<div class="alert" role="alert" style="background-color:#C1D8D7;"> 
+				  <table>
+		  				<tr> 
+		  					<td id="estado_alquiler_equipo">Laser Candela</td>
+		  				</tr>
+		  				<tr>
+		  					<td id="estado_alquiler">Finalizado</td>
+		  				</tr>
+		    		</table>
+				</div>
+	    </td>
+	    <td>
+	    		<div>
+	    		
+	    		</div> 
+	    </td>
+	 </tr>
+	 
+</table>
+
+{% endblock %}

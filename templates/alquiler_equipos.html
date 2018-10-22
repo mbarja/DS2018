@@ -1,0 +1,64 @@
+{% extends "base_tecnico.html" %}
+{% load staticfiles %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/alquiler_equipos.css' %}">
+
+{% block divcentro %}
+
+<div id="formulario_reserva">
+	<h2 onclick="mostrarDiv('div_equipos')">1. Seleccionar Equipo</h2>
+	
+	<div id="div_equipos" style="display: none;" class="form-inline">
+		<div style="font-size:20px;font-family: 'Nanum Gothic', sans-serif;">
+			<table>
+		  		<tr>
+		    		<th style="padding-left: 10px;">
+		    			<input type="radio" id="VenusLegacy" name="equipos" value="VenusLegacy"/>
+		            	<label for="equipos">Venus Legacy</label>
+		            </th>
+		            <th style="padding-left: 10px;">
+		            	<input type="radio" id="Candela" name="equipos" value="Candela" />
+		            	<label for="equipos">Candela</label>
+		            </th>
+		    
+		  		</tr>
+		</table>
+		</div>
+	</div>
+	
+	<h3 id="error_fechas" style="color:red;"></h3>
+	<h2 onclick="mostrarDiv('div_fechas')">2. Elegir Fechas</h2>
+	<div id="div_fechas" style="display: none;" class="form-inline">
+		<input id="fechas" type="text" name="datetimes" style="color:black;width:200px"/>
+
+		<script>
+		$(function() {
+		  $('input[name="datetimes"]').daterangepicker({
+		    timePicker: true,
+		    startDate: moment().startOf('hour').add(24, 'hour'),
+		    endDate: moment().startOf('hour').add(72, 'hour'),
+		    locale: {
+		      format: 'DD/M/Y'
+		    }
+		  });
+		});
+		</script>
+	</div>
+
+	<br>
+	<h2>3. 
+	<Button class="button" onclick="reservar('fechas')">Reservar</Button></h2>
+	
+</div>
+<div id="confirmacion_reserva" style="display: none;" class="form-inline">
+
+<div class="jumbotron">
+  <h1 class="display-4">Reserva exitosa</h1>
+  <p id="mensaje_reserva_exitosa" class="lead"> </p>
+  <hr class="my-4">
+  <p id="mensaje_reserva_exitosa_precio" class="lead"></p>
+  <a class="btn btn-primary btn-lg" href="../estado_alquileres_tecnico" role="button">Ver alquileres</a>
+  <a class="btn btn-primary btn-lg" href="../alquiler_equipos" role="button">Realizar otra reserva</a>
+</div>
+
+</div>	
+{% endblock %}

@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="es">
+    <head>
+    
+	    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+	    <meta name="viewport" content="width=device-width, initial-scale=1">
+	    
+	    <title>Beauty Rent</title>
+	
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+		<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+		
+		
+		<link href="https://fonts.googleapis.com/css?family=Cinzel|Gloria+Hallelujah|Indie+Flower|Lobster|Nanum+Gothic" rel="stylesheet">
+		<link rel="stylesheet" type="text/css" href="{% static 'css/home.css' %}">
+		
+		
+		<link href="//netdna.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+		<script src="//netdna.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+		
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+		<script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+		
+		
+		<script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script>
+		<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+		<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="{% static 'css/daterangepicker.css' %}">
+		<!--  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />-->
+		
+	   
+    </head>
+
+    
+    <style type="text/css">
+	    
+	    body {
+	 			background-color:#4ABDAC ;
+	 			background-image: url("{% static "/img/watermark2.png" %}");
+	 			background-position: center;
+				background-attachment: fixed;
+	 			color: white;
+	    		font-family: "Lato", sans-serif;
+	    		transition: background-color .5s;
+			}
+			.jumbotron{
+				background-color:#fd9c81 ;
+		 		color: white;
+		    	font-family: "Lato", sans-serif;
+		    	padding-left:15px;
+		    	border-radius: 6px ;
+		    	opacity: 0.7;
+		    	filter: alpha(opacity=70);
+			}
+		
+			.container_equipo {
+				width: 100px;
+			    height: 150px;
+
+			    
+			}
+			/* resize images */
+			.container_equipo img {
+			    width: 90%;
+			    height: 100%;
+			    
+			}
+			.container_equipo_descripcion {
+				width: 150px;
+			    height: 200px;
+			    
+			    
+			}
+			.sidenav {
+			    height: 100%;
+			    width: 0;
+			    position: fixed;
+			    z-index: 1;
+			    top: 0;
+			    left: 0;
+			    background-color: #111;
+			    overflow-x: hidden;
+			    transition: 0.5s;
+			    padding-top: 60px;
+			}
+			.sidenav a {
+			    padding: 8px 8px 8px 32px;
+			    text-decoration: none;
+			    font-size: 25px;
+			    color: #818181;
+			    display: block;
+			    transition: 0.3s;
+			}
+			.sidenav a:hover {
+			    color: #f1f1f1;
+			}
+			.sidenav .closebtn {
+			    position: absolute;
+			    top: 0;
+			    right: 25px;
+			    font-size: 36px;
+			    margin-left: 50px;
+			}
+			
+			.button {
+				background-color:#F7B733 ;
+		 		color: white;
+		    	font-family: "Lato", sans-serif;
+		    	border: none;
+			    padding: 10px 15px;
+			    text-align: center;
+			    text-decoration: none;
+			    display: inline-block;
+			    font-size: 16px;
+			    margin: 4px 2px;
+			    cursor: pointer;
+			    border-radius: 6px ;
+			}
+			.boton_equipo{
+				background-color:white ;
+		    	border: none;
+			    padding: 15px 32px;
+			    display: inline-block;
+			    margin: 4px 2px;
+			    cursor: pointer;
+			    border-radius: 6px ;
+			    height: 15px;
+				width: 15px;
+			}
+			#main {
+			    transition: margin-left .5s;
+			    padding: 16px;
+			}
+			@media screen and (max-height: 450px) {
+			  .sidenav {padding-top: 15px;}
+			  .sidenav a {font-size: 18px;}
+			}
+			#login-dp{
+			    min-width: 250px;
+			    padding: 14px 14px 0;
+			    overflow:hidden;
+			    background-color:rgba(255,255,255,.8);
+			}
+			#login-dp .help-block{
+			    font-size:12px    
+			}
+			#login-dp .bottom{
+			    background-color:rgba(255,255,255,.8);
+			    border-top:1px solid #ddd;
+			    clear:both;
+			    padding:14px;
+			}
+			#login-dp .social-buttons{
+			    margin:12px 0    
+			}
+			#login-dp .social-buttons a{
+			    width: 49%;
+			}
+			#login-dp .form-group {
+			    margin-bottom: 10px;
+			}
+			.btn-fb{
+			    color: #fff;
+			    background-color:#3b5998;
+			}
+			.btn-fb:hover{
+			    color: #fff;
+			    background-color:#496ebc 
+			}
+			.btn-tw{
+			    color: #fff;
+			    background-color:#55acee;
+			}
+			.btn-tw:hover{
+			    color: #fff;
+			    background-color:#59b5fa;
+			}
+			@media(max-width:768px){
+			    #login-dp{
+			        background-color: inherit;
+			        color: #fff;
+			    }
+			    #login-dp .bottom{
+			        background-color: inherit;
+			        border-top:0 none;
+			    }
+			}
+			
+			
+			.modal-header {
+			  padding: 0;
+			}
+			.modal-header .close {
+			  padding: 10px 15px;
+			}
+			.modal-header ul {
+			  border: none;
+			}
+			.modal-header ul li {
+			  margin: 0;
+			}
+			.modal-header ul li a {
+			  border: none;
+			  border-radius: 0;
+			}
+			.modal-header ul li.active a {
+			  color: #e12f27;
+			}
+			.modal-header ul li a:hover {
+			  border: none;
+			}
+			.modal-header ul li a span {
+			  margin-left: 10px;
+			}
+			.modal-body .form-group {
+			  margin-bottom: 10px;
+			}
+			#wrapper {
+			  text-align: center;
+		}
+		#yourdiv {
+		  display: inline-block;
+		}
+		#estado_alquiler_equipo {
+			font-size:20px;
+			font-family: 'Nanum Gothic', sans-serif;
+		    text-align: center;
+		    color: #47504F;
+		}
+		#titulo_tabla_equipos {
+			font-size:20px;
+			font-family: 'Nanum Gothic', sans-serif;
+		    text-align: center;
+		    color: #47504F;
+		}
+		#mantenimiento {
+			font-size:30px;
+			font-weight: bold;
+			font-family: 'Nanum Gothic', sans-serif;
+		    text-align: center;
+		    color: #47504F;
+		}
+		#estado_alquiler {
+			font-size:15px;
+			font-family: 'Nanum Gothic', sans-serif;
+		    text-align: center;
+		    color: #47504F;
+		}
+		#tabla_formulario_finalizar {
+			font-size:15px;
+			font-family: 'Nanum Gothic', sans-serif;
+		    text-align: left;
+		    color: #47504F;
+		    padding-left:15px;
+		    font-weight: bold;
+		}
+		     
+			
+			
+	</style>
+</head>
+<body>
+
+<h1 style="font-family: 'Gloria Hallelujah', cursive; color:#3E4FA3; text-align: center; text-shadow: 2px 2px #080653;">Beauty Rent</h1>
+<div id="main">
+
+	<nav class="navbar navbar-default navbar-inverse" role="navigation">
+	
+	{% block navbar %}{% endblock %}
+	</nav>
+
+   {% block cuerpo %}{% endblock %}
+  
+</div>
+	<script>
+	
+		function openNav() {
+		    document.getElementById("mySidenav").style.width = "250px";
+		    document.getElementById("main").style.marginLeft = "250px";
+		    document.body.style.backgroundColor = "#7cd0c3";
+		    
+		}
+		
+		function closeNav() {
+		    document.getElementById("mySidenav").style.width = "0px";
+		    document.getElementById("main").style.marginLeft= "0px";
+		    document.body.style.backgroundColor = "#4ABDAC";
+		
+		}
+		
+		function mostrarDiv(id) {
+			var div = document.getElementById(id).style.display;
+			if (div != "none"){
+				document.getElementById(id).style.display = "none" ;
+			}
+			else{
+				document.getElementById(id).style.display = "block";
+			}
+		}
+		
+		function confirmar(id, idTabla) {
+			var div = document.getElementById(id);
+			var confirma = confirm("Desea confirmar la reserva?");
+			if (confirma == true) {
+				document.getElementById(id).style.backgroundColor = '#89FABE';
+				
+				var myTable = document.getElementById(idTabla);
+				myTable.rows[1].cells[0].innerHTML = 'Confirmado';
+				
+			} else {
+			    
+			}
+		}
+		
+		function cancelar(id, idTabla) {
+			var div = document.getElementById(id);
+			var confirma = confirm("Desea cancelar la reserva?");
+			if (confirma == true) {
+				document.getElementById(id).style.backgroundColor = '#FA8F86';
+				
+				var myTable = document.getElementById(idTabla);
+				myTable.rows[1].cells[0].innerHTML = 'Cancelado';
+				
+			} else {
+			    
+			}
+		}
+		
+		function reservar(fechas) {
+			
+			var fechas = document.getElementById(fechas).value;
+			
+			if (document.getElementById('VenusLegacy').checked) {
+				  equipo = document.getElementById('VenusLegacy').value;
+			} else {
+				equipo = document.getElementById('Candela').value;
+			}
+			
+			var fechaDesde = fechas.substring(0, 10);
+			var fechaHasta = fechas.substring(13,23);
+			
+			var hoy = new Date();
+			var desde = toDate(fechaDesde);
+			
+			if (desde<=hoy){
+				
+				document.getElementById('error_fechas').innerHTML= 'Los equipos no pueden reservarse para una fecha anterior o igual a la actual';
+
+			} else {
+			
+				var confirma = confirm("Desea confirmar la reserva del equipo "+equipo+ " para las fechas "+ fechas+"?");
+				
+				if (confirma == true) {
+					
+					document.getElementById('mensaje_reserva_exitosa').innerHTML= 'Se ha registrado la reserva del equipo '+equipo+' desde el '+ fechaDesde + ' hasta el '+fechaHasta;
+					
+					document.getElementById('mensaje_reserva_exitosa_precio').innerHTML= obtenerPrecio(toDate(fechaDesde), toDate(fechaHasta), equipo);
+					
+					document.getElementById('formulario_reserva').style.display = "none" ;
+					
+					document.getElementById('confirmacion_reserva').style.display = "block" ;
+				} else {
+				    
+				}
+			}
+		}
+		
+		function toDate(dateStr) {
+			  var parts = dateStr.split("/")
+			  return new Date(parts[2], parts[1] - 1, parts[0])
+		}
+		
+		function obtenerPrecio(desde, hasta, equipo){
+			
+			var timeDiff = Math.abs(hasta.getTime() - desde.getTime());
+			var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24)); 
+			
+			var precio;
+			
+			if (equipo == 'Candela'){
+				precio = diffDays * 1000;
+				
+				return 'El valor del alquiler es de $'+precio+'. Recuerde que este importe es por el uso de hasta 10.000 pulsos. Luego se cobrará un recargo de 0,30 centavos por pulso.';
+				
+			} else {
+				precio = diffDays *800;
+				return 'El valor del alquiler es de $'+precio;
+			}
+			
+			
+		}
+		
+		function finalizar_alquiler_candela(id, idTabla){
+			
+			var efinal = parseInt(document.getElementById(id).value);
+			
+			var myTable = document.getElementById(idTabla);
+			var desde = toDate(myTable.rows[0].cells[1].innerHTML);
+			var hasta = toDate(myTable.rows[1].cells[1].innerHTML);
+			var einicial = parseInt(myTable.rows[2].cells[1].innerHTML);
+			
+			var timeDiff = Math.abs(hasta.getTime() - desde.getTime());
+			var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
+			
+			var precio = diffDays*1000;
+			var pulsos = efinal -einicial;
+
+			var mensaje;
+			
+			var confirma
+			
+			if(pulsos>10000){
+				
+				var excedente = (pulsos-10000)*0.30;
+				
+				precio = (precio + excedente);			
+				
+				confirma = confirm("Desea confirmar el final del alquiler del equipo Candela por $ "+ precio + "? Se deben cobrar $"+ excedente +" por exceso de uso");
+			} else {
+				confirma = confirm("Desea confirmar el final del alquiler del equipo Candela por $ "+ precio+"?");
+			}
+			
+			if (confirma == true) {
+				
+				document.getElementById('formulario_finalizar_alquiler_candela').style.display = "none" ;
+				
+				var tablaEstados = document.getElementById('tabla_estados_equipos');
+				
+				tablaEstados.rows[0].cells[0].innerHTML = 'Libre';
+				
+				document.getElementById('alquilado_candela').style.backgroundColor= '#F7F55D';
+				
+				var mantenimiento = (40000 - pulsos);
+				
+				if (mantenimiento<=5000){
+					
+					document.getElementById('mantenimientoCandela').style.color= 'red';
+				}
+				
+				document.getElementById('mantenimientoCandela').innerHTML= mantenimiento;
+				document.getElementById('boton_finalizar').style.display='none';
+				
+				
+			} else {
+			    
+			}
+			
+		}
+		
+		function registrarEquipo(){
+			
+			var numeroSerie = parseInt(document.getElementById('numero_de_serie').value);
+			
+			var nombre = document.getElementById('nombre').value;
+			
+			if(numeroSerie == 90097 || numeroSerie == 15001 || numeroSerie == 90098){
+				
+				document.getElementById('error_numero_serie').innerHTML=("El número de serie pertenece a un equipo ya registrado");
+				document.getElementById('numero_de_serie').style.color= 'red';
+				
+			}
+			else {
+				
+				var confirma = confirm("Desea registrar el nuevo equipo en el sistema?");
+				
+				if (confirma == true) {
+					
+					document.getElementById('mensaje_alta_exitosa').innerHTML= 'Se ha registrado el equipo '+nombre+' con el numero de serie '+ numeroSerie;
+										
+					document.getElementById('formulario_nuevo_equipo').style.display = "none" ;
+					
+					document.getElementById('confirmacion_registro_equipo').style.display = "block" ;
+				} else {
+				    
+				}
+				
+			}
+			
+		}
+		
+		
+	</script>
+     
+</body>
+</html> 

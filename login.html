@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <title>Índice de Demanda Laboral</title>
+        <!-- StyleSheets -->
+        <link href="{{STATIC_URL}}css/bootstrap.css" rel="stylesheet">
+        <link href="{{STATIC_URL}}css/bootstrap-theme.min.css" rel="stylesheet">
+        <link href="{{STATIC_URL}}css/bootstrap-theme.css" rel="stylesheet"> 
+        <!-- Bootstrap Core CSS -->
+        <link href="{{STATIC_URL}}css/bootstrap.min.css" rel="stylesheet">
+        <link href="{{STATIC_URL}}css/bootstrap.min1.css" rel="stylesheet">  
+        <link href="{{STATIC_URL}}css/modern-business.css" rel="stylesheet">
+        <link href="{{STATIC_URL}}css/signin.css" rel="stylesheet">
+        <link href="{{STATIC_URL}}css/normalize.css" rel="stylesheet">
+
+        <style type="text/css">
+            body {
+                color:  #75bdd1;
+                background-color: white;
+                font-family: sans-serif;
+            }
+        </style>
+        
+    </head>
+    <body>
+        
+          {% if form.errors %}
+            <p>El nombre de usuario o la contraseña son incorrectos, intente de nuevo.</p>
+          {% endif %}
+        <div class="jumbotron">
+            <div class="container">
+                 <h1>Iniciar sesión </h1>
+                    <form method="post" action="{% url 'django.contrib.auth.views.login' %}">
+                        {% csrf_token %}
+                        <table>
+                            <tr>
+                                <td><label style="width: 30px;"><span class="glyphicon glyphicon-user"></span>   </label></td>
+                                <td>{{ form.username }}</td>
+                            </tr>
+                            <tr>
+                                <td><label style="width: 30px;"><span class="glyphicon glyphicon-lock"></span>   </label></td>
+                                <td>{{ form.password }}</td>
+                            </tr>
+                        </table>
+                        <br>
+                        <input type="submit" class="btn btn-primary btn-m" value="login"/> <input type="hidden" name="next"
+                                                                value="{{ next }}"/>
+                    </form>
+            </div>
+        </div>
+<script src="/static/js/jquery.min.js"></script>      
+<script src="/static/js/bootstrap.min.js"></script>
+
+    </body>
+
+
+</html>

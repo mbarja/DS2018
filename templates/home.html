@@ -1,0 +1,124 @@
+{% extends "base_general.html" %}
+{% load staticfiles %}
+{% block cuerpo %}
+<div class="modal fade login-register-form" role="dialog">
+                            <div class="modal-dialog modal-sm">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal">
+                                            <span class="glyphicon glyphicon-remove"></span>
+                                        </button>
+                                        <ul class="nav nav-tabs">
+                                            <li class="active"><a data-toggle="tab" href="#login-form"> Cliente <span class="glyphicon glyphicon-user"></span></a></li>
+                                            <li><a data-toggle="tab" href="#registration-form"> Técnico <span class="glyphicon glyphicon-star-empty"></span></a></li>
+                                        </ul>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="tab-content">
+                                            <div id="login-form" class="tab-pane fade in active">
+                                                <form action="/">
+                                                    <div class="form-group">
+					                                  <label for="nombre">Nombre</label>
+					                                  <input type="text" class="form-control" id="nombre" placeholder="Nombre" name="nombre">
+					                              </div>
+					                              <div class="form-group">
+					                                  <label for="newemail">Email:</label>
+					                                  <input type="email" class="form-control" id="newemail" placeholder="Email" name="newemail">
+					                              </div>
+					                              <div class="form-group">
+					                                  <label for="telefono">Teléfono</label>
+					                                  <input type="text" class="form-control" id="telefono" placeholder="Telefono" name="telefono">
+					                              </div>
+					                              <div class="form-group">
+					                                  <label for="usuario">Usuario</label>
+					                                  <input type="text" class="form-control" id="usuario" placeholder="usuario" name="usuario">
+					                              </div>
+					                              <div class="form-group">
+					                                  <label for="newpwd">Password:</label>
+					                                  <input type="password" class="form-control" id="newpwd" placeholder="contraseña" name="newpwd">
+					                              </div>
+                                                    <button type="submit" class="btn btn-default">Registrarse</button>
+                                                </form>
+                                            </div>
+                                            <div id="registration-form" class="tab-pane fade">
+                                                <form action="/">
+					                              <div class="form-group">
+					                                  <label for="nombre">Nombre</label>
+					                                  <input type="text" class="form-control" id="nombre" placeholder="Nombre" name="nombre">
+					                              </div>
+					                              <div class="form-group">
+					                                  <label for="dni">DNI</label>
+					                                  <input type="text" class="form-control" id="dni" placeholder="DNI" name="dni">
+					                              </div>
+					                              <div class="form-group">
+					                                  <label for="newemail">Email:</label>
+					                                  <input type="email" class="form-control" id="newemail" placeholder="Email" name="newemail">
+					                              </div>
+					                              <div class="form-group">
+					                                  <label for="direccion">Dirección</label>
+					                                  <input type="text" class="form-control" id="direccion" placeholder="Direccion" name="direccion">
+					                              </div>
+					                              <div class="form-group">
+					                                  <label for="telefono">Teléfono</label>
+					                                  <input type="text" class="form-control" id="telefono" placeholder="Telefono" name="telefono">
+					                              </div>
+					                              <div class="form-group">
+					                                  <label for="usuario">Usuario</label>
+					                                  <input type="text" class="form-control" id="usuario" placeholder="usuario" name="usuario">
+					                              </div>
+					                              <div class="form-group">
+					                                  <label for="newpwd">Password:</label>
+					                                  <input type="password" class="form-control" id="newpwd" placeholder="contraseña" name="newpwd">
+					                              </div>
+					                              <button type="submit" class="btn btn-default">Registrarse</button>
+					                          </form>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                
+                                </div>
+                            </div>
+</div>
+<div class="container-fluid" style="width:70%">
+	<h2></h2>
+	<p style="font-size:25px;font-family: 'Indie Flower', cursive;">En Beauty RENT contamos con equipos para estética corporal de última generación y brindamos un servicio de alquiler
+	con entrega y retiro a domicilio. Para poder acceder a este servicio debes registrarte como técnico.</p>
+	<p style="font-size:25px;font-family: 'Indie Flower', cursive;">Además podés registrarte como cliente y reservar turno para el tratamiento que 
+	desees </p>
+</div>
+
+<br>
+
+  <div class="container-fluid" style="width:60%">
+      <div class="row m-auto text-center w-75">
+        
+        <div class="col-4 princing-item celeste" style="float:left;width:300px;">
+          <div class="pricing-divider ">
+              <h3 class="text-light">ALQUILER DE EQUIPOS</h3>             
+          </div>
+          <div class="card-body bg-white mt-0 shadow">
+            <ul class="list-unstyled mb-5 position-relative">
+              
+            </ul>
+            <a class="btn btn-primary btn-lg" href="../equipos" role="button">Ver Equipos</a>         
+          </div>
+        </div>
+       
+  
+        <div class="col-4 princing-item rosa" style="float:right;width:300px;">
+          <div class="pricing-divider ">
+              <h3 class="text-light">RESERVA DE TURNOS</h3>
+          </div>
+
+          <div class="card-body bg-white mt-0 shadow">
+            <ul class="list-unstyled mb-5 position-relative">
+              
+            </ul>
+            <a class="btn btn-primary btn-lg" href="../tratamientos" role="button">Ver Tratamientos</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+{% endblock %}
