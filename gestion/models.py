@@ -28,3 +28,6 @@ class TipoUsuario(models.Model):
     tipo = models.CharField(max_length=1, choices=TIPOS_USUARIO)
     usuario = models.CharField(max_length=10)
     
+    def __str__(self):
+        return self.tipo
+    

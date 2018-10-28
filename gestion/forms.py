@@ -1,5 +1,8 @@
-'''
-Created on 22 sep. 2018
+from django import forms
 
-@author: Lala
-'''
+class LoginForm(forms.Form):
+    usuario = forms.CharField(label='usuario', max_length=15)
+    contrasenia = forms.CharField(widget=forms.PasswordInput)
+    widgets = {
+            'contrasenia': forms.PasswordInput(),
+        }

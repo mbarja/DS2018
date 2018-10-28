@@ -1,4 +1,5 @@
 eclipse.preferences.version=1
+encoding//gestion/views.py=UTF-8
 encoding//templates/base_duenio.html=UTF-8
 encoding//templates/base_general.html=UTF-8
 encoding//templates/equipos_duenio.html=UTF-8

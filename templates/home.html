@@ -1,6 +1,16 @@
 {% extends "base_general.html" %}
 {% load staticfiles %}
 {% block cuerpo %}
+
+<div >
+									{% if errors %}
+									            <ul>
+									            {% for error in errores %}
+									                <li style= "color:red;font-size: 150%;">{{ error }} </li> 
+									            {% endfor %}
+									            </ul>
+									    {% endif %}
+									</div>
 <div class="modal fade login-register-form" role="dialog">
                             <div class="modal-dialog modal-sm">
                                 <div class="modal-content">
