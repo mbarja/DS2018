@@ -1,5 +1,6 @@
 eclipse.preferences.version=1
 encoding//gestion/views.py=UTF-8
+encoding//templates/alta_tratamiento.html=UTF-8
 encoding//templates/base_duenio.html=UTF-8
 encoding//templates/base_general.html=UTF-8
 encoding//templates/equipos_duenio.html=UTF-8
@@ -10,6 +11,5 @@ encoding//templates/home.html=UTF-8
 encoding//templates/home_duenio.html=UTF-8
 encoding//templates/nuevo_equipo.html=UTF-8
 encoding//templates/tratamientos_cliente.html=UTF-8
-encoding//templates/tratamientos_duenio.html=UTF-8
 encoding//templates/tratamientos_general.html=UTF-8
 encoding//templates/tratamientos_tecnico.html=UTF-8

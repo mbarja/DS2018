@@ -1,14 +1,12 @@
 from django.shortcuts import render
 import datetime
-from .forms import LoginForm
+from .forms import *
 from django.contrib.auth import authenticate
 from django.contrib.auth import authenticate, login as dj_login
 from gestion.models import TipoUsuario
+from django.template.context_processors import request
+from _ast import Num
 
-
-# Create your views here.
-def login(request):
-    return render(request, 'login.html')
 
 def home(request):
     errors=[]
@@ -32,8 +30,6 @@ def home(request):
                     
                 base = obtenerHtmlSegunTipoUsuario(usuario)
                 
-                print(request)
-                
                 return render(request, base, {'fecha': fecha, 'usuario':usuario})
             
             else:
@@ -45,18 +41,47 @@ def home(request):
         formlogin = LoginForm()
         
         return render(request, 'home.html', {'fecha': fecha, 'formlogin':formlogin, 'errors':errors})
+    
 
 def obtenerHtmlSegunTipoUsuario(usuario):
     
-    tipo = TipoUsuario.objects.filter(usuario=usuario).values_list('tipo',flat=True)
-    
+    tipo = TipoUsuario.objects.filter(usuario=usuario).values_list('tipo',flat=True) 
     
     if tipo[0]=='D':
         return 'home_duenio.html'
     
     if tipo[0]=='T':
         return 'home_tecnico.html'
+    
+
+def registrar_tratamiento(request):
+    
+    errors=[]
+    fecha = datetime.datetime.now()
+    
+    if request.user.is_authenticated:
+        usuario = request.user.username
+        #ELSE usuario no logueado   
+       
+    if request.method == 'POST':
         
+        form = EquipoForm(request.POST)
+
+        if form.is_valid():
+           
+            equipo = form.save(commit=False)
+        
+            equipo.save()
+        
+        else:
+            
+            print(form.errors)
+            
+            return render(request, 'alta_tratamiento.html', {'fecha': fecha, 'form':form, 'errors':errors, 'usuario':usuario})    
+    
+    form = EquipoForm()
+    
+    return render(request, 'alta_tratamiento.html', {'fecha': fecha, 'form':form, 'errors':errors, 'usuario':usuario})    
 
 def equipos(request):
     fecha = datetime.datetime.now()
