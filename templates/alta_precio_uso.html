@@ -1,0 +1,48 @@
+{% extends "base_duenio.html" %}
+{% block cuerpo %}
+
+<div class="container-fluid" style="width:80%">
+{% if errores %}
+            <ul>
+            {% for error in errores %}
+                <li style= "color:red;font-size: 150%;">{{ error }} </li> 
+            {% endfor %}
+            </ul>
+    {% endif %}
+<h1>Datos del Equipo</h1>
+    <form method="POST" class="post-form">
+    {% csrf_token %}
+    
+    <table>
+    	<tr>
+		    <td id="tabla_label_general">Equipo</td>
+		    <td id="tabla_input_general">{{ form.equipo }}</td>
+		    <td id="tabla_mensaje_error">
+		    	{{ form.equipo.errors }}
+		    <td> 
+		</tr>
+		<tr>
+		    <td id="tabla_label_general">Rango</td>
+		    <td id="tabla_input_general">{{ form.rango }}</td> 
+		    <td id="tabla_mensaje_error">
+		    	{{ form.rango.errors }}
+		    <td>  
+		</tr>
+		<tr>
+		    <td id="tabla_label_general">Precio</td>
+		    <td id="tabla_input_general">{{ form.precio }}</td>
+		    <td id="tabla_mensaje_error">
+		    	{{ form.precio.errors }}
+		    <td>   
+		</tr>
+		<tr>
+		    <td id="tabla_label_general"></td>
+		    <td id="tabla_input_general" style="padding-top:20px;"><button type="submit" class="save btn btn-default">Guardar</button></td> 
+		</tr>
+    
+     </form>
+    </table>
+        
+   
+</div>
+{% endblock %}

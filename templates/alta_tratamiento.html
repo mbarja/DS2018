@@ -2,18 +2,11 @@
 {% block cuerpo %}
 
 <div class="container-fluid" style="width:80%">
-<h1>Datos del Equipo</h1>
+<h1>Datos del Tratamiento</h1>
     <form method="POST" class="post-form">
     {% csrf_token %}
     
     <table>
-    	<tr>
-		    <td id="tabla_label_general">Número de serie</td>
-		    <td id="tabla_input_general">{{ form.num_serie }}</td>
-		    <td id="tabla_mensaje_error">
-		    	{{ form.num_serie.errors }}
-		    <td> 
-		</tr>
 		<tr>
 		    <td id="tabla_label_general">Nombre</td>
 		    <td id="tabla_input_general">{{ form.nombre }}</td> 
@@ -22,36 +15,11 @@
 		    <td>  
 		</tr>
 		<tr>
-		    <td id="tabla_label_general">Marca</td>
-		    <td id="tabla_input_general">{{ form.marca }}</td>
+		    <td id="tabla_label_general">Información</td>
+		    <td id="tabla_input_general">{{ form.informacion }}</td>
 		    <td id="tabla_mensaje_error">
-		    	{{ form.marca.errors }}
+		    	{{ form.informacion.errors }}
 		    <td>   
-		</tr>
-		<tr>
-		    <td id="tabla_label_general">Fecha de Compra</td>
-		    <td id="tabla_input_general">{{ form.fecha_compra }}</td> 
-		    <td id="tabla_mensaje_error">
-		    	{{ form.fecha_compra.errors }}
-		    <td> 
-		</tr>
-		<tr>
-		    <td id="tabla_label_general">Precio por Día</td>
-		    <td id="tabla_input_general">{{ form.precio_dia }}</td>
-		    <td id="tabla_mensaje_error">
-		    	{{ form.precio_dia.errors }}
-		    <td>  
-		</tr>
-		<tr>
-		    <td id="tabla_label_general">Período para Mantenimiento</td>
-		    <td id="tabla_input_general">{{ form.periodo_mantenimiento }}</td>
-		    <td id="tabla_mensaje_error">
-		    	{{ form.periodo_mantenimiento.errors }}
-		    <td>  
-		</tr>
-		<tr>
-		    <td id="tabla_label_general">Unidad de Medida</td>
-		    <td id="tabla_input_general">{{ form.unidad_medida }}</td> 
 		</tr>
 		<tr>
 		    <td id="tabla_label_general"></td>

@@ -1,0 +1,17 @@
+{% extends "base_tecnico.html" %}
+{% block cuerpo %}
+
+<div class="container-fluid" style="width:80%">
+
+    {% csrf_token %}
+   <div class="jumbotron">
+	  <h1 class="display-4">Alquiler reservado con éxito!</h1>
+	  <p id="mensaje_reserva_exitosa" class="lead">Se ha registrado la reserva para el alquiler del equipo {{ equipo }} en el sistema, desde
+	  el {{ desde }} hasta el {{ hasta }}. </p>
+	  <hr class="my-4">
+	  <p id="mensaje_reserva_exitosa_precio" class="lead"></p>
+	  <a class="btn btn-primary btn-lg" href="../alquiler_equipos" role="button">Reservar otro equipo</a>
+	  <a class="btn btn-primary btn-lg" href="../estado_alquileres_tecnico" role="button">Ver reservas</a>
+	</div>
+</div>
+{% endblock %}
