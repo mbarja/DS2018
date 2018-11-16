@@ -18,7 +18,8 @@ class EquipoForm(forms.ModelForm):
         fields = '__all__'
         widgets = {
             'nombre': Textarea(attrs={'cols': 10, 'rows': 1}),
-            'unidad_medida': Select()
+            'unidad_medida': Select(),
+            'marca':Select()
         }
         
         

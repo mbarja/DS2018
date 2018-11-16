@@ -21,6 +21,10 @@ TIPOS_USUARIO = (
         ('T', 'Tecnico'),
         ('D', 'Duenio'),
     )
+MARCAS_EQUIPOS = (
+        ('C', 'Candela'),
+        ('V', 'Venus Legacy'),
+    )
 
 def no_future(value):
     today = date.today()
@@ -66,7 +70,7 @@ class Equipo(models.Model):
     
     num_serie = models.IntegerField(primary_key=True, unique=True, error_messages={'unique':"Ya existe un equipo con este numero de serie"})
     nombre = models.CharField(max_length=50)
-    marca = models.CharField(max_length=50)
+    marca = models.CharField(max_length=1, choices=MARCAS_EQUIPOS)
     fecha_compra = models.DateField(validators=[no_future])
     precio_dia = models.IntegerField(validators=[negativo])
     periodo_mantenimiento = models.IntegerField(validators=[negativo])
@@ -87,9 +91,6 @@ class PrecioPorUso(models.Model):
     equipo = models.ForeignKey('Equipo', on_delete=models.CASCADE)
     precio = models.FloatField(validators=[negativo])
     rango = models.BigIntegerField(validators=[negativo])
-    
-    def __str__(self):
-        return '%s %s' % (self.equipo, self.rango)
     
 class EquipoTratamiento(models.Model):
     equipo = models.ForeignKey('Equipo', on_delete=models.CASCADE)

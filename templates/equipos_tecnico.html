@@ -8,12 +8,14 @@
 	la información sobre su funcionamiento.</p>
 </div>
 <br>
-<div class="container-fluid" style="width:60%">
+<div class="container-fluid" style="width:80%;">
       <div class="row m-auto text-center w-75">
-        
-        <div class="col-4 princing-item rosa" style="float:left;width:300px;">
+      {% for equipo in equipos %}
+ 		{% if equipo.marca == "V" %}
+       
+        <div class="col-4 princing-item rosa" style="display: inline-block;width:300px;">
           <div class="pricing-divider ">
-              <h3 style="color:#dfdce3;font-family: 'Lobster', cursive;">Venus Legacy</h3>
+              <h3 style="color:#dfdce3;font-family: 'Lobster', cursive;">{{ equipo.nombre }} ({{ equipo.num_serie }})</h3>
               <div class="container_equipo" style="margin: 0 auto;" >
 				<img src="{% static "/img/venus_legacy.png" %}" />
 			  </div>
@@ -22,21 +24,25 @@
           </div>
           <div class="card-body bg-white mt-0 shadow">
             <ul class="list-unstyled mb-5 position-relative">
-              <li><b>Precio por día</b> $ 800</li>
-              <li><b>Alquiler mínimo</b> 1 día</li>
-              <li><b>Recargo por</b> 1 día</li>
-              <li><b>Precio por recargo </b> $ 1000</li>
+              <li><b>Precio por día</b> $ {{ equipo.precio_dia }}</li>
+              {% for recargo in recargos %}
+	               {% if recargo.equipo == equipo %}
+	              	
+	              		<li><b>Recargo por </b> {{recargo.rango }} dia/s: $ {{recargo.precio }} (cada día)</li>
+	              	
+		              
+		            {% endif %}
+	              {% endfor %}
             </ul>
-            <b><a href="#" onclick="mostrarDiv('info_equipo_venus')">Ver info del equipo</a></b>
           </div>
         </div>
-       
-  
-        <div class="col-4 princing-item celeste" style="float:right;width:300px;">
+       {% endif %}
+  		{% if equipo.marca == "C" %}
+        <div class="col-4 princing-item celeste" style="display: inline-block;width:300px;">
           <div class="pricing-divider ">
-              <h3 style="color:#dfdce3;font-family: 'Lobster', cursive;">Candela</h3>
+              <h3 style="color:#dfdce3;font-family: 'Lobster', cursive; ">{{ equipo.nombre }} ({{ equipo.num_serie }})</h3>
               <div class="container_equipo" style="margin: 0 auto;" >
-				<img src="{% static "/img/candela.png" %}"  onclick="mostrarDiv('info_equipo_venus')"/>
+				<img src="{% static "/img/candela.gif" %}" />
 			  </div> 
 			  <br>
 			  <p>Láser para tratar la eliminación del vello no deseado y lesiones vasculares, pigmentadas y arrugas.</p>
@@ -44,53 +50,25 @@
 
           <div class="card-body bg-white mt-0 shadow">
             <ul class="list-unstyled mb-5 position-relative">
-              <li><b>Precio por día</b> $ 1000</li>
-              <li><b>Alquiler mínimo</b> 1 día</li>
-              <li><b>Recargo por </b> 10000 pulsos</li>
-              <li><b>Precio por pulso </b> $ 0.30</li>
+              <li><b>Precio por día</b> $ {{ equipo.precio_dia }}</li>
+	              {% for recargo in recargos %}
+	               {% if recargo.equipo == equipo %}
+	              	
+	              		<li><b>Recargo por </b> {{recargo.rango }} pulsos: $ {{recargo.precio }} (cada pulso)</li>
+	              	
+		              
+		            {% endif %}
+	              {% endfor %}
             </ul>
-            <b><a href="#" onclick="mostrarDiv('info_equipo_candela')">Ver info del equipo</a></b>
           </div>
         </div>
+        {% endif %}
+      
+      {% endfor %}
       </div>
-    </div>
+      
+    
   
-  <br>
-  <div class="container-fluid" style="width:90%">
-	<div id="info_equipo_candela" style="display: none;">
-		<div class="jumbotron" style="font-size:20px;font-family: 'Nanum Gothic', sans-serif;">
-		  <h2 class="display-4" style="color:#fc4a1a">¿Qué es Candela?</h2>
-		  	<p class="lead">Candela elimina el vello de forma rápida y eficaz. Es totalmente indoloro gracias a su sistema de frío controlado, que acompaña cada emisión del láser y protege la piel durante la aplicación.
-
-El láser Candela penetra en el folículo piloso destruyéndolo de raíz, sin dañar la piel circundante. Luego de cada sesión, la piel queda sin ningún pelo y te vas totalmente depilada.
-
-Se necesitan de unas pocas sesiones para que te olvides de la depilación por un largo rato!</p>
-			<p class="lead">Syneron-Candela ha renovado un producto ya excelente para brindar mayor confort al paciente y versatilidad al usuario. Está indicado para tratar todo tipo de piel de manera efectiva, cómoda y rápida, gracias a sus múltiples tamaños de spot (6, 8, 10, 12, 15, y 18 mm) y a su amplio rango de repetición. Además, gracias al sistema integrado de enfriamiento DCD, único en el mercado, se consigue una total refrigeración de la epidermis para que el tratamiento sea mucho más cómodo, seguro e indoloro, permitiendo utilizar mayores fluencias de energía y resultados más efectivos. Es el más rápido del mercado dado que posee una frecuencia de repetición de 2 Hz lo que permite tratar a más pacientes en menos tiempo, además de que no utiliza gel.</p>
-		  <hr class="my-4">
-		  
-		</div>
-	</div>
-	<div id="info_equipo_venus" style="display: none;">
-		<div class="jumbotron" style="font-size:20px;font-family;background-color:#99e699 ;: 'Nanum Gothic', sans-serif;">
-			<h2 class="display-4" style="color:#248f24">¿Qué es Venus Legacy?</h2>
-			<p class="header">Venus Legacy™ es el primer y único dispositivo aprobado por la FDA para utilizar tecnología 4D™, que combina radiofrecuencia multipolar, pulsos magnéticos y tecnología VariPulse™, con retroalimentación termal en tiempo real para brindar tratamientos seguros, sin dolor y con resultados superiores. La tecnología de Campos Magnéticos Pulsados ha sido utilizada en la medicina tradicional durante décadas y ha sido probada científicamente en cuanto a sus propiedades regenerativas. La Radiofrecuencia Multipolar brinda un rápido y homogéneo calentamiento a varias profundidades del tejido; mientras que nueva tecnología Vari-Pulse permite realizar una succión para penetrar aún más profundamente con la energía, facilitar el drenaje linfático y estimular la circulación. Además, integra un medidor de temperatura de manos libres con una gráfica de retroalimentación en su pantalla, lo cual permite un feedback constante con el tejido para obtener mejores resultados clínicos generales.</p>
-			
-			<p class="lead">Venus Legacy ofrece tratamientos 100% seguros e indoloros para todo tipo de piel, brindando los siguientes resultados -inmediatos y a largo plazo- para rostro, cuello y cuerpo:</p>
-				<ul>
-				<li>Remodelación corporal sin cirugía</li>
-				<li>Reducción de celulitis</li>
-				<li>Reducción de arrugas</li>
-				<li>Reducción de la circunferencia corporal</li>
-				<li>Reducción de flacidez</li>
-				</ul>
-		  	<hr class="my-4">
-		  	<h2 class="display-4" style="color:#248f24">¿Cómo funciona?</h2>
-		  	<p class="lead">Utilizando tecnología patentada (MP)², Venus Legacy utiliza radiofrecuencia multipolar con campos magnéticos pulsados que produce una matriz de calor relajante y terapéutica sobre la piel. 
-		  	La radiofrecuencia multipolar ocasiona una reacción térmica en los tejidos que se traduce en contracción de la piel. De esta manera, se podrá apreciar una piel más tensa y reafirmada, una reducción de las arrugas y una disminución de la celulitis.</p>
-			<p class="lead">Venus Legacy se adapta a las necesidades del paciente y puede utilizar en cualquier zona del cuerpo: cara, abdomen, brazos, cuellos, piernas y glúteos. </p>
-		  	
-		</div>
-	</div>
 </div>
 
 {% endblock %}

@@ -345,9 +345,22 @@ def equipos_tecnico(request):
     
     equipos = Equipo.objects.all()
     
-    return render(request, 'equipos_tecnico.html', {'fecha': fecha, 'usuario':usuario, 'equipos':equipos})
+    recargos = PrecioPorUso.objects.all()
+
+    return render(request, 'equipos_tecnico.html', {'fecha': fecha, 'usuario':usuario, 'equipos':equipos, 'recargos':recargos})
 
     
+def tratamientos_tecnico(request):
+    fecha = datetime.datetime.now()
+    usuario = validarUsuarioRegistrado(request)
+    
+    relacion = EquipoTratamiento.objects.all()
+    tratamientos = Tratamiento.objects.all()
+    
+    
+    return render(request, 'tratamientos_tecnico.html', {'fecha': fecha})
+
+
 def equipos(request):
     fecha = datetime.datetime.now()
     return render(request, 'equipos_general.html', {'fecha': fecha})
@@ -360,9 +373,7 @@ def home_tecnico(request):
 
 
 
-def tratamientos_tecnico(request):
-    fecha = datetime.datetime.now()
-    return render(request, 'tratamientos_tecnico.html', {'fecha': fecha})
+
 
 
 
