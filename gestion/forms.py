@@ -31,6 +31,7 @@ class TratamientoForm(forms.ModelForm):
             'nombre': Textarea(attrs={'cols': 20, 'rows': 1}),
             'informacion': Textarea(attrs={'cols': 80, 'rows': 10}),
         }
+        equipo = forms.ModelChoiceField(queryset=Equipo.objects.all())
         
 class TecnicoForm(forms.ModelForm):
     
@@ -54,13 +55,7 @@ class PrecioUsoForm(forms.ModelForm):
         fields = '__all__'
         equipo = forms.ModelChoiceField(queryset=Equipo.objects.all())
         
-class EquipoTratamientoForm(forms.ModelForm):
-    
-    class Meta:
-        model = EquipoTratamiento
-        fields = '__all__'
-        equipo = forms.ModelChoiceField(queryset=Equipo.objects.all())
-        tratamiento = forms.ModelChoiceField(queryset=Tratamiento.objects.all())
+
 
 class AlquilerForm(forms.Form):
     
