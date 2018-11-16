@@ -2,22 +2,17 @@ from django.shortcuts import render, redirect
 import datetime
 from .forms import *
 from gestion import *
-from django.contrib.auth import authenticate, login as dj_login, logout as dj_logout
+from django.contrib.auth import authenticate, login as dj_login, logout
 from django.contrib.auth.models import User
 from gestion.models import TipoUsuario
 from django.db.models import Q
 from django.template.context_processors import request
 from _overlapped import NULL
 
+def logout_view(request, next_page):
+    logout(request)
+    return redirect(next_page, request.path)
 
-def logout(request):
-    dj_logout(request)
-    
-    fecha = datetime.datetime.now()
-    formTecnico = TecnicoForm()
-    formlogin = LoginForm()
-        
-    return render(request, 'home.html', {'fecha': fecha, 'formlogin':formlogin, 'formTecnico':formTecnico})
 
 def home(request):
     errors=[]
@@ -56,7 +51,7 @@ def home(request):
                 
                 tipo.save()
                 
-                return render(request, 'home_tecnico.html', {'fecha': fecha, 'usuario':usuario})
+                return redirect(request.path, 'home_tecnico.html', {'fecha': fecha, 'usuario':usuario})
             
         formlogin = LoginForm(request.POST)
 

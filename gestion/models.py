@@ -110,5 +110,7 @@ class Alquiler(models.Model):
     def __str__(self):
         return '%s %s' % (self.tecnico, self.equipo)
     
+
+    
     
     
