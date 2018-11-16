@@ -4,136 +4,72 @@
 {% block divcentro %}
 
 <table >
+{% for alquiler in alquileres %}
+{% csrf_token %}
+<form action='' method="get">
 	<tr>
 	    <td>
-		    	<div class="alert" role="alert" style="background-color:#F8FA89;" onclick="mostrarDiv('div_reservado')" id="alquiler_reservado"> 
+		    	<div class="alert" role="alert" 
+		    	style="background-color:#F8FA89;" 
+		    	onclick="mostrarDiv('{{ alquiler.id }}')" id="alquiler_reservado"> 
+				  <input type="hidden" name="id_alquiler" value={{ alquiler.id }}>
 				  <table id='tabla_reservado'>
 		  				<tr> 
-		  					<td id="estado_alquiler_equipo">Laser Candela</td>
+		  					<td id="estado_alquiler_equipo">{{ alquiler.equipo }}</td>
 		  				</tr>
 		  				<tr>
+		  				{% if alquiler.estado == 'R' %}
 		  					<td id="estado_alquiler">Reservado</td>
-		  				</tr>
-		    		</table>
-				</div>
-	    </td>
-	    <td style="padding-left: 10px;">
-	    		<div class="alert" role="alert" style="background-color:#DBF0EE; color:black; display: none;" id="div_reservado">
-	    			<table>
-		  				<tr> 
-		  					<td><b>Desde: </b></td>
-		  					<td> 31/10/2018</td>
-		  				</tr>
-		  				<tr>
-		  					<td><b>Hasta:  </b></td>
-		  					<td>30/11/2018</td>
-		  				</tr>
-		  				<tr>
-		  					<td><b>Precio:  </b></td>
-		  					<td>$ 30000</td>
-		  				</tr>
-		    		</table>
-	    		</div> 
-	    </td>
-	    <td style="padding-left: 10px;"> <button type="button" class="btn btn-success" onclick="confirmar('alquiler_reservado', 'tabla_reservado')">Confirmar</button>	
-	    </td>
-	    <td style="padding-left: 10px;"> <button type="button" class="btn btn-danger" onclick="cancelar('alquiler_reservado', 'tabla_reservado')">Cancelar</button>	
-	    </td>
-	 </tr>
-	 <tr>
-	    <td>
-		    	<div class="alert" role="alert" style="background-color:#89FABE;" onclick="mostrarDiv('div_confirmado')" id="alquiler_confirmado"> 
-				  <table id='tabla_confirmado'>
-		  				<tr> 
-		  					<td id="estado_alquiler_equipo">Venus Legacy</td>
-		  				</tr>
-		  				<tr>
-		  					<td id="estado_alquiler">Confirmado</td>
-		  				</tr>
-		    		</table>
-				</div>
-	    </td>
-	    <td style="padding-left: 10px;">
-	    		<div>
-	    			<div class="alert" role="alert" style="background-color:#DBF0EE; color:black; display: none;" id="div_confirmado">
-	    			<table>
-		  				<tr> 
-		  					<td><b>Desde: </b></td>
-		  					<td> 31/10/2018</td>
-		  				</tr>
-		  				<tr>
-		  					<td><b>Hasta:  </b></td>
-		  					<td>15/11/2018</td>
-		  				</tr>
-		  				<tr>
-		  					<td><b>Precio:  </b></td>
-		  					<td>$ 12000</td>
-		  				</tr>
-		    		</table>
-	    		</div> 
-	    		</div> 
-	    </td>
-	    <td style="padding-left: 10px;"> <button type="button" class="btn btn-danger" onclick="cancelar('alquiler_confirmado', 'tabla_confirmado')">Cancelar</button>	
-	    </td>
-	 </tr>
-	 <tr>
-	    <td>
-	    	<div class="alert" role="alert" style="background-color:#86FA88;"> 
-			  <table>
-	  				<tr> 
-	  					<td id="estado_alquiler_equipo">Laser Candela</td>
-	  				</tr>
-	  				<tr>
-	  					<td id="estado_alquiler">En Curso</td>
-	  				</tr>
-	    		</table>
-			</div>
-	    </td>
-	    <td>
-	    		<div>
-	    		
-	    		</div> 
-	    </td>
-	 </tr>
-	 <tr>
-	    <td>
-		    	<div class="alert" role="alert" style="background-color:#FA8F86;"> 
-				  <table id="cancelado">
-		  				<tr> 
-		  					<td id="estado_alquiler_equipo">Venus Legacy</td>
-		  				</tr>
-		  				<tr>
+		  				{% elif alquiler.estado == 'O' %}
 		  					<td id="estado_alquiler">Cancelado</td>
+	  					{% elif alquiler.estado == 'C' %}
+	  					<td id="estado_alquiler">Confirmado</td>
+	  					{% elif alquiler.estado == 'E' %}
+	  					<td id="estado_alquiler">En curso</td>
+	  					{% elif alquiler.estado == 'F' %}
+	  					<td id="estado_alquiler">Finalizado</td>
+		  				{% endif %}
 		  				</tr>
 		    		</table>
 				</div>
 	    </td>
-	    <td>
-	    		<div>
-	    		
-	    		</div> 
-	    </td>
-	 </tr>
-	 <tr>
-	    <td>
-		    	<div class="alert" role="alert" style="background-color:#C1D8D7;"> 
-				  <table>
+	    <td style="padding-left: 10px;">
+	    		<div class="alert" role="alert" style="background-color:#DBF0EE; color:black; display: none;" id="{{ alquiler.id }}">
+	    			<table>
 		  				<tr> 
-		  					<td id="estado_alquiler_equipo">Laser Candela</td>
+		  					<td><b>Desde: </b></td>
+		  					<td> {{ alquiler.desde }}</td>
 		  				</tr>
 		  				<tr>
-		  					<td id="estado_alquiler">Finalizado</td>
+		  					<td><b>Hasta:  </b></td>
+		  					<td>{{ alquiler.hasta }}</td>
+		  				</tr>
+		  				<tr>
+		  					<td><b>Precio:  </b></td>
+		  					{% for precio in precios %}
+		  					 {% if precio.alquiler == alquiler %}
+		               			
+			  					<td>$ {{ precio.precio }}</td>
+			  				{% endif %}
+			  					 
+			             {% endfor %}
 		  				</tr>
 		    		</table>
-				</div>
-	    </td>
-	    <td>
-	    		<div>
-	    		
 	    		</div> 
 	    </td>
+	    {% if alquiler.estado == 'R' %}
+	    <td style="padding-left: 10px;"> <button type="submit" class="save btn btn-success" value="confirmar" name="confirmar">Confirmar</button>	
+	    </td>
+	    <td style="padding-left: 10px;"> <button type="submit" class="save btn btn-danger" value="cancelar" name="cancelar">Cancelar</button>	
+	    </td>
+	    {% endif %}
+	    {% if alquiler.estado == 'C' %}
+	     <td style="padding-left: 10px;"><button type="submit" class="save btn btn-danger" value="cancelar" name="cancelar">Cancelar</button>	
+	    </td>
+	    {% endif %}
 	 </tr>
-	 
+	 </form>
+	 {% endfor %}
 </table>
 
 {% endblock %}

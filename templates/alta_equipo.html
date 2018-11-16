@@ -63,4 +63,17 @@
         
    
 </div>
+
+<script>
+	$(function() {
+	  $("form input[name='fecha_compra'").daterangepicker({
+	    timePicker: false,
+	    singleDatePicker: true,
+	    startDate: moment().startOf('hour').add(24, 'hour'),
+	    locale: {
+	      format: 'DD/M/Y'
+	    }
+	  });
+	});
+</script>
 {% endblock %}

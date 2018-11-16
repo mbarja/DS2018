@@ -314,16 +314,51 @@ def estado_alquileres_tecnico(request):
     fecha = datetime.datetime.now()
     usuario = validarUsuarioRegistrado(request)
     
+    if 'id_alquiler' in request.GET:
+        id_alquiler = request.GET['id_alquiler']
+        
+        alquiler = Alquiler.objects.get(id=id_alquiler)
+        
+        alquiler.id = id_alquiler
+        
+        if 'confirmar' in request.GET:
+            alquiler.estado = 'C'
+        
+        if 'cancelar' in request.GET:
+            alquiler.estado = 'O'
+        
+        alquiler.save()
+            
+    
     consultaDni = Tecnico.objects.filter(usuario=usuario).values_list('dni',flat=True)
     
     dniUsuario = consultaDni[0]
     
     alquileres = Alquiler.objects.filter(tecnico=dniUsuario)
     
-    print(alquileres)
+    precios = calcularPreciosAlquileres(alquileres)
     
-    return render(request, 'estado_alquileres_tecnico.html', {'fecha': fecha, 'usuario':usuario})
-   
+    return render(request, 'estado_alquileres_tecnico.html', {'fecha': fecha, 'usuario':usuario, 'alquileres':alquileres, 'precios':precios})
+
+def calcularPreciosAlquileres(alquileres):
+    precios = []
+    
+    for alquiler in alquileres:
+        
+        equipo = getattr(alquiler, 'equipo')
+        precio = getattr(equipo, 'precio_dia')
+        desde = getattr(alquiler, 'desde')
+        hasta = getattr(alquiler, 'hasta')
+        
+        cantidad_dias = (hasta - desde).days
+
+        precio = {'alquiler':alquiler, 'precio':(cantidad_dias*precio)}
+        precios.append(precio)
+        print(precios)
+        
+    return precios
+        
+        
     
 def registrarAlquiler(idEquipo, desde, hasta, dniUsuario):
     
@@ -354,11 +389,11 @@ def tratamientos_tecnico(request):
     fecha = datetime.datetime.now()
     usuario = validarUsuarioRegistrado(request)
     
-    relacion = EquipoTratamiento.objects.all()
+    equipos = EquipoTratamiento.objects.all()
     tratamientos = Tratamiento.objects.all()
     
     
-    return render(request, 'tratamientos_tecnico.html', {'fecha': fecha})
+    return render(request, 'tratamientos_tecnico.html', {'fecha': fecha, 'tratamientos': tratamientos, 'equipos':equipos})
 
 
 def equipos(request):
