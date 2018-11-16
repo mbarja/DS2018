@@ -79,7 +79,6 @@ class Equipo(models.Model):
 class Tratamiento(models.Model):
     nombre = models.CharField(max_length=50, unique=True, error_messages={'unique':"Ya existe un tratamiento con este nombre"})
     informacion = models.CharField(max_length=2000)
-    equipo = models.ForeignKey('Equipo', on_delete=models.CASCADE)
 
     def __str__(self):
         return self.nombre
@@ -92,6 +91,12 @@ class PrecioPorUso(models.Model):
     def __str__(self):
         return '%s %s' % (self.equipo, self.rango)
     
+class EquipoTratamiento(models.Model):
+    equipo = models.ForeignKey('Equipo', on_delete=models.CASCADE)
+    tratamiento = models.ForeignKey('Tratamiento', on_delete=models.CASCADE)
+    
+    def __str__(self):
+        return '%s %s' % (self.equipo, self.tratamiento)
     
 class Alquiler(models.Model):
     tecnico = models.ForeignKey('tecnico', null=True, blank=True,on_delete=models.CASCADE)

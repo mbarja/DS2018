@@ -26,6 +26,7 @@
             <li class="divider"></li>
             <li><a href="../alta_equipo">Nuevo equipo </a></li>
             <li><a href="../alta_precio_uso">Asignar precio por uso </a></li>
+            <li><a href="../alta_equipo_tratamiento">Asignar tratamiento </a></li>
           </ul>
         </li>
         <li class="dropdown">
@@ -34,16 +35,19 @@
             <li><a href="../tratamientos_duenio">Ver tratamientos</a></li>
             <li class="divider"></li>
             <li><a href="../alta_tratamiento">Nuevo tratamiento </a></li>
+            <li><a href="../alta_equipo_tratamiento">Asignar equipo </a></li>
           </ul>
         </li>
         <li><a href="../registrar_mantenimiento">Registrar Mantenimiento</a></li>
         <li><a href="#">Estadisticas</a></li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-       		<p style="color:dimgray;"> <span class="glyphicon glyphicon-user"></span> {{ usuario }} <a href="../logout"> <span style="padding-left:20px;"class="glyphicon glyphicon-log-out"></span></a> </p>
+       		<p style="color:dimgray;"> <span class="glyphicon glyphicon-user"></span> {{ usuario }} </p>
             <p style="color:dimgray;"> <span class="glyphicon glyphicon-calendar"></span> {{ fecha }}  </p>
       </ul>
-      
+      <ul class="nav navbar-nav">      
+            <a class="navbar-brand" href="../logout">Cerrar sesión</a> 
+      </ul>
     </div><!-- /.navbar-collapse -->
   </div><!-- /.container-fluid -->
 {% endblock %}

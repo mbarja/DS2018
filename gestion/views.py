@@ -208,8 +208,51 @@ def validarPrecioPorUso(form):
     else:
         return False
     
-
+def alta_equipo_tratamiento(request):
+    errors=[]
+    fecha = datetime.datetime.now()
     
+    usuario = validarUsuarioRegistrado(request)
+    
+    if request.method == 'POST':
+        
+        form = EquipoTratamientoForm(request.POST)
+
+        if form.is_valid():
+           
+            equipoTratamiento = form.save(commit=False)
+            
+            if (validarEquipoTratamiento(form)):
+            
+                equipoTratamiento.save()
+                
+                return render(request, 'equipo_tratamiento_registrado.html', {'fecha': fecha, 'usuario':usuario})
+            
+            else:
+                errors.append('Ya existe ese tratamiento asociado al equipo')
+                return render(request, 'alta_equipo_tratamiento.html', {'fecha': fecha, 'form':form, 'errores':errors, 'usuario':usuario}) 
+        
+        else:
+            
+            return render(request, 'alta_equipo_tratamiento.html', {'fecha': fecha, 'form':form, 'errores':errors, 'usuario':usuario})    
+    
+    form = EquipoTratamientoForm()
+    
+    return render(request, 'alta_equipo_tratamiento.html', {'fecha': fecha, 'form':form, 'errors':errors, 'usuario':usuario})
+    
+    
+def validarEquipoTratamiento(form):
+    
+    equipo = form.cleaned_data['equipo']
+    tratamiento = form.cleaned_data['tratamiento']
+    
+    relacion = EquipoTratamiento.objects.filter(equipo=equipo).filter(tratamiento=tratamiento)
+
+    if not relacion:
+        return True
+    
+    else:
+        return False
     
 def alquiler_equipos(request):
     errors = []
@@ -316,13 +359,16 @@ def equipos(request):
 
 def home_tecnico(request):
     fecha = datetime.datetime.now()
-    usuario = validarUsuarioRegistrado(request)
-    return render(request, 'home_tecnico.html', {'fecha': fecha, 'usuario':usuario})
+    return render(request, 'home_tecnico.html', {'fecha': fecha})
+
+
+
+
 
 def tratamientos_tecnico(request):
     fecha = datetime.datetime.now()
-    usuario = validarUsuarioRegistrado(request)
-    return render(request, 'tratamientos_tecnico.html', {'fecha': fecha, 'usuario':usuario})
+    return render(request, 'tratamientos_tecnico.html', {'fecha': fecha})
+
 
 
 def home_duenio(request):
