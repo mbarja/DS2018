@@ -18,7 +18,7 @@
 	{% for equipo in equipos %}
 	{% csrf_token %}
 	<form action='' method="get">
-	<input type="hidden" name="id_alquiler" value={{ equipo.id }}>
+	<input type="hidden" name="id_equipo" value={{ equipo.num_serie }}>
 	    <td>
 	    	<div class="alert" role="alert" style="background-color:#C1D8D7;"> 
 			  <table id='tabla_reservado'>
@@ -26,8 +26,20 @@
 	  					<td id="estado_alquiler_equipo">{{ equipo.nombre }}</td>
 	  				</tr>
 	  				<tr>
-	  					<td id="estado_alquiler">{{ equipo.num_serie }}</td>
+	  					<td id="estado_alquiler">Num. Serie: {{ equipo.num_serie }}</td>
 	  				</tr>
+	  				<tr>
+	  					<td id="estado_alquiler">$ Día: {{ equipo.precio_dia }}</td>
+	  				</tr>
+	  				{% if equipo.periodo_mantenimiento != 0 %}
+	  				<tr>
+	  					<td id="estado_alquiler">Periodo Mantenimiento: {{ equipo.periodo_mantenimiento }}</td>
+	  				</tr>
+	  				{% else %}
+	  				<tr>
+	  					<td id="estado_alquiler">No requiere mantenimiento</td>
+	  				</tr>
+	  				{% endif %}
 	    		</table>
 			</div>
 	    </td>
@@ -44,9 +56,9 @@
 		    		</table>
 	    		</div> 
 	    </td>
-	    {% if equipo.marca == 'C' %}
-	    <td style="padding-left: 10px;"> 
 	    
+	    <td style="padding-left: 10px;"> 
+	    {% if equipo.marca == 'C' %}
 	    <p id="mantenimientoCandela" style="font-size:30px; font-weight: bold;font-family: 'Nanum Gothic', sans-serif;text-align: center; color: #47504F;"> 
 		    
 		    {% for pulso in pulsos %}
@@ -56,13 +68,13 @@
 	        {% endfor %}
 	        
 	        </p>
-	        	
+	    {% endif %}    	
 	    </td>
 	    
 	    
-	    <td style="padding-left: 10px;"> <button type="submit" class="save btn btn-success" value="mantenimiento" name="mantenimiento">Registrar Mantenimiento</button>
+	    <td style="padding-left: 10px;"> <button type="submit" class="save btn btn-success" value="editar" name="editar">Editar Equipo</button>
 	    </td>
-	    {% endif %}
+	    </form>
 	 </tr>
 	 {% endfor %}
 	 

@@ -1,0 +1,16 @@
+{% extends "base_cliente.html" %}
+{% block cuerpo %}
+
+<div class="container-fluid" style="width:80%">
+
+    {% csrf_token %}
+   <div class="jumbotron">
+	  <h1 class="display-4">Turno registrado con éxito!</h1>
+	  <p id="mensaje_reserva_exitosa" class="lead">Se ha registrado el turno para el tratamiento {{ tratamiento }} el día {{ fechaTratamiento }}. </p>
+	  <hr class="my-4">
+	  <p id="mensaje_reserva_exitosa_precio" class="lead"></p>
+	  <a class="btn btn-primary btn-lg" href="../reservar_turno" role="button">Reservar otro turno</a>
+	  <a class="btn btn-primary btn-lg" href="../tratamientos_cliente" role="button">Ver tratamientos</a>
+	</div>
+</div>
+{% endblock %}

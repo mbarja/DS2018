@@ -8,6 +8,8 @@ from gestion.models import TipoUsuario
 from django.db.models import Q
 from django.template.context_processors import request
 from _overlapped import NULL
+from django.shortcuts import get_object_or_404, redirect, render, reverse
+from http.cookiejar import request_path
 
 def logout_view(request, next_page):
     logout(request)
@@ -21,23 +23,17 @@ def home(request):
     if request.method == 'POST':
         
         formTecnico = TecnicoForm(request.POST)
+        
 
         if formTecnico.is_valid():
-            
             
             usuario = formTecnico.cleaned_data['usuario']
 
             contrasenia = formTecnico.cleaned_data['contrasenia']
 
-            user = authenticate(username=usuario, password=contrasenia)
+            user = User.objects.filter(username=usuario)
             
-            if user is not None:
-                
-                errorTecnico = 'El usuario ya existe en el sistema'
-                
-                return render(request, 'home.html', {'fecha': fecha, 'formTecnico':formTecnico, 'errorTecnico':errorTecnico})
-            
-            else:
+            if not user:
                 
                 user = User.objects.create_user(username=usuario, password=contrasenia)
                 
@@ -51,37 +47,82 @@ def home(request):
                 
                 tipo.save()
                 
-                return redirect(request.path, 'home_tecnico.html', {'fecha': fecha, 'usuario':usuario})
-            
-        formlogin = LoginForm(request.POST)
-
-        if formlogin.is_valid():
-            
-            usuario = formlogin.cleaned_data['usuario']
-
-            contrasenia = formlogin.cleaned_data['contrasenia']
-
-            user = authenticate(username=usuario, password=contrasenia)
-            
-            if user is not None:
+                return render(request, 'home_tecnico.html', {'fecha': fecha, 'usuario':usuario})
                 
-                dj_login(request, user)
-                    
-                base = obtenerHtmlSegunTipoUsuario(usuario)
-                
-                return render(request, base, {'fecha': fecha, 'usuario':usuario})
             
             else:
-               
-                errorlogin='El usuario o contraseña no son válidos'
                 
-                return render(request, 'home.html', {'fecha': fecha, 'formlogin':formlogin, 'errorlogin':errorlogin})
+                errors.append('El usuario ya existe en el sistema')
+                
+                return render(request, 'home.html', {'fecha': fecha, 'formTecnico':formTecnico, 'errores':errors})
+                
+        else:
+            
+            formCliente = ClienteForm(request.POST)
+            
+            if formCliente.is_valid():
+                
+                usuario = formCliente.cleaned_data['usuario']
+    
+                contrasenia = formCliente.cleaned_data['contrasenia']
+    
+                user = User.objects.filter(username=usuario)
+                
+                if not user:
+                    
+                    user = User.objects.create_user(username=usuario, password=contrasenia)
+                    
+                    Cliente = formCliente.save(commit=False)
+            
+                    formCliente.save()
+                    
+                    dj_login(request, user)
+                    
+                    tipo = TipoUsuario(tipo='C', usuario=usuario)
+                    
+                    tipo.save()
+                    
+                    return render(request, 'home_cliente.html', {'fecha': fecha, 'usuario':usuario})
+                
+                else:
+                    
+                    errors.append('El usuario ya existe en el sistema')
+                    
+                    return render(request, 'home.html', {'fecha': fecha, 'formCliente':formCliente, 'errores':errors})
+                    
+        
+            else:
+                
+                formlogin = LoginForm(request.POST)
+                
+                if formlogin.is_valid():
+            
+                    usuario = formlogin.cleaned_data['user']
+        
+                    contrasenia = formlogin.cleaned_data['pswd']
+        
+                    user = authenticate(username=usuario, password=contrasenia)
+                    
+                    if user is not None:
+                        
+                        dj_login(request, user)
+                            
+                        base = obtenerHtmlSegunTipoUsuario(usuario)
+                        
+                        return render(request, base, {'fecha': fecha, 'usuario':usuario})
+                    
+                    else:
+                       
+                        errors.append('El usuario o contraseña no son válidos')
+                        
+                        return render(request, 'home.html', {'fecha': fecha, 'formlogin':formlogin, 'errores':errors})
     else:
         
         formTecnico = TecnicoForm()
         formlogin = LoginForm()
+        formCliente = ClienteForm()
         
-        return render(request, 'home.html', {'fecha': fecha, 'formlogin':formlogin, 'formTecnico':formTecnico, 'errors':errors})
+        return render(request, 'home.html', {'fecha': fecha, 'formlogin':formlogin, 'formTecnico':formTecnico, 'formCliente':formCliente, 'errors':errors})
     
     
 
@@ -94,6 +135,8 @@ def obtenerHtmlSegunTipoUsuario(usuario):
     
     if tipo[0]=='T':
         return 'home_tecnico.html'
+    if tipo[0]=='C':
+        return 'home_cliente.html'
     
 
 def alta_equipo(request):
@@ -286,8 +329,7 @@ def alta_equipo_tratamiento(request):
     form = EquipoTratamientoForm()
     
     return render(request, 'alta_equipo_tratamiento.html', {'fecha': fecha, 'form':form, 'errors':errors, 'usuario':usuario})
-    
-    
+       
 def validarEquipoTratamiento(form):
     
     equipo = form.cleaned_data['equipo']
@@ -355,7 +397,6 @@ def validarDatosParaAlquiler(form, usuario):
     alquileres = Alquiler.objects.filter(equipo=equipo).filter(desde__range=[desde.date(), hasta.date()]).filter(hasta__range=[desde.date(), hasta.date()]).filter(~Q(estado = 'O'))
     
     if not alquileres:
-        
         alquiler = registrarAlquiler(equipo, desde, hasta, dniUsuario)
         return alquiler
     else:
@@ -410,9 +451,7 @@ def calcularPreciosAlquileres(alquileres):
         precios.append(precio)
         
     return precios
-        
-        
-    
+           
 def registrarAlquiler(idEquipo, desde, hasta, dniUsuario):
     
     equipo = Equipo.objects.get(num_serie=idEquipo)
@@ -463,7 +502,6 @@ def reservas(request):
     reservas = Alquiler.objects.all().order_by('-id')
     excesos = obtenerExcesosPorUso()
     return render(request, 'reservas.html', {'fecha': fecha, 'usuario':usuario, 'reservas':reservas, 'excesos':excesos, 'errores':errors})
-
 
 def obtenerExcesosPorUso():
     
@@ -518,6 +556,43 @@ def equipos_duenio(request):
     fecha = datetime.datetime.now()
     usuario = validarUsuarioRegistrado(request)
     
+    if request.method == 'GET':
+        if 'id_equipo' in request.GET:
+            
+            num_serie = request.GET['id_equipo']
+            
+            if 'editar' in request.GET:
+                
+                equipo = Equipo.objects.get(num_serie=num_serie)
+                
+                form = EquipoModificarForm(instance=equipo)
+                
+                return render(request, 'equipo_modificar.html', {'fecha':fecha, 'usuario':usuario, 'form':form, 'num_serie': num_serie})
+            
+            
+        
+    if request.method == 'POST':
+        
+        num_serie = request.POST['num_serie2']
+        
+        form = EquipoModificarForm(data=request.POST)
+    
+        if form.is_valid():
+            
+            instance = form.save(commit=False)
+            
+            instance.num_serie = num_serie
+            
+            instance.save()
+            
+            return render(request, 'equipo_modificado.html', {'fecha': fecha, 'usuario':usuario})
+    
+        else:
+            
+            print(form.errors)
+            return render(request, 'equipo_modificar.html', {'fecha':fecha, 'usuario':usuario, 'form':form})
+        
+    
     equipos = Equipo.objects.all()
     
     estados = obtenerEstadosEquipos(equipos)
@@ -526,9 +601,49 @@ def equipos_duenio(request):
     
     return render(request, 'equipos_duenio.html', {'fecha': fecha, 'usuario':usuario, 'equipos':equipos, 'estados':estados, 'pulsos': pulsos})
 
-
-def obtenerEstadosEquipos(equipos):
+def editarPreciosPorUso(request):
+    fecha = datetime.datetime.now()
+    usuario = validarUsuarioRegistrado(request)
     
+    mensaje = ""
+    
+    equipos = Equipo.objects.all()
+    
+    if request.method == 'GET':
+        
+        if 'equipo' in request.GET:
+            
+            num_serie = request.GET['equipo']
+            
+            if 'buscar' in request.GET:
+                
+                equipoSeleccionado = Equipo.objects.get(num_serie=num_serie)
+                
+                preciosPorUso = PrecioPorUso.objects.filter(equipo=num_serie)
+                
+                return render(request, 'editar_precio_uso.html', {'fecha': fecha, 'usuario':usuario, 'equipoSeleccionado':equipoSeleccionado, 'precios':preciosPorUso, 'num_serie':num_serie})
+                
+        if 'filtrarPrecio' in request.GET:
+                
+            idPrecio = request.GET['precio']
+            rango = request.GET['rango']
+            precio = request.GET['nuevoPrecio']
+            
+            num_serie = request.GET['num_serie']
+            
+            precioSeleccionado = PrecioPorUso.objects.get(id=idPrecio)
+            precioSeleccionado.rango=rango
+            precioSeleccionado.precio=precio
+            precioSeleccionado.save()
+            
+            equipoSeleccionado = Equipo.objects.get(num_serie=num_serie)
+            
+            mensaje = 'Se modifico exitosamente el valor del rango: '+rango+ '- Precio:$ '+precio+ '. Del equipo '+ str(getattr(equipoSeleccionado, 'num_serie'))
+            
+
+    return render(request, 'editar_precio_uso.html', {'fecha': fecha, 'usuario':usuario, 'equipos':equipos, 'mensaje':mensaje})
+
+def obtenerEstadosEquipos(equipos):   
     hoy = datetime.datetime.now()
     estados=[]
     
@@ -593,7 +708,6 @@ def equipos_tecnico(request):
     recargos = PrecioPorUso.objects.all()
 
     return render(request, 'equipos_tecnico.html', {'fecha': fecha, 'usuario':usuario, 'equipos':equipos, 'recargos':recargos})
-
     
 def tratamientos_tecnico(request):
     fecha = datetime.datetime.now()
@@ -602,38 +716,112 @@ def tratamientos_tecnico(request):
     equipos = EquipoTratamiento.objects.all()
     tratamientos = Tratamiento.objects.all()
     
-    
-    return render(request, 'tratamientos_tecnico.html', {'fecha': fecha, 'tratamientos': tratamientos, 'equipos':equipos})
+    return render(request, 'tratamientos_tecnico.html', {'fecha': fecha, 'tratamientos': tratamientos, 'equipos':equipos, 'usuario':usuario})
 
+def tratamientos_cliente(request):
+    fecha = datetime.datetime.now()
+    usuario = validarUsuarioRegistrado(request)
+    
+    tratamientos = Tratamiento.objects.all()
+    
+    
+    return render(request, 'tratamientos_cliente.html', {'fecha': fecha, 'tratamientos': tratamientos, 'usuario':usuario})
+
+def reservar_turno(request):
+    errors = []
+    fecha = datetime.datetime.now()
+    usuario = validarUsuarioRegistrado(request)
+    
+    if request.method == 'POST':
+        
+        form = TurnoForm(request.POST)
+        
+        if form.is_valid():
+            
+            turno = validarDatosParaTurno(form, usuario)
+            
+            if not turno:
+                
+                errors.append('Ya ha reservado un turno para ese tratamiento y esa fecha')
+                
+                return render(request, 'reservar_turno.html', {'fecha': fecha, 'form':form, 'errores':errors, 'usuario':usuario})
+                
+            else:
+                tratamiento = getattr(turno, 'tratamiento')
+                fechaTratamiento = getattr(turno, 'fecha')
+                return render(request, 'turno_registrado.html', {'fecha': fecha, 'usuario':usuario, 'tratamiento':tratamiento,'fechaTratamiento':fechaTratamiento})
+            
+        else:
+            print(form.errors)
+        
+    
+    form = TurnoForm()
+    
+    return render(request, 'reservar_turno.html', {'fecha': fecha, 'tratamientos': tratamientos, 'usuario':usuario, 'form': form})
+
+def validarDatosParaTurno(form, usuario):
+    
+    nombreTratamiento = form.cleaned_data['tratamiento']
+    datosfecha = form.cleaned_data['fecha']    
+    
+    tratamiento = Tratamiento.objects.filter(nombre=nombreTratamiento)[:1]
+    
+    print(tratamiento)
+    
+    cliente = Cliente.objects.filter(usuario=usuario)[:1]
+
+    turno = Turno.objects.filter(cliente=cliente).filter(tratamiento=tratamiento).filter(fecha=datosfecha)
+    
+    if not turno:
+        turnoRegistrado = registrarTurno(tratamiento,datosfecha, cliente)
+        
+        return turnoRegistrado
+    else:
+        return NULL
+    
+def registrarTurno(tratamiento,fecha, cliente):
+    
+    tratamiento = Tratamiento.objects.get(id=tratamiento)
+    cliente = Cliente.objects.get(id=cliente)
+    
+    turno = Turno(cliente=cliente, tratamiento=tratamiento, fecha=fecha)
+    
+    turno.save()
+    
+    return turno
 
 def equipos(request):
     fecha = datetime.datetime.now()
-    return render(request, 'equipos_general.html', {'fecha': fecha})
+   
+    equipos = Equipo.objects.all()
+    
+    recargos = PrecioPorUso.objects.all()
+
+    return render(request, 'equipos_general.html', {'fecha': fecha, 'equipos':equipos, 'recargos':recargos})
+
 
 def home_tecnico(request):
     fecha = datetime.datetime.now()
-    return render(request, 'home_tecnico.html', {'fecha': fecha})
+    usuario = validarUsuarioRegistrado(request)
+    return render(request, 'home_tecnico.html', {'fecha': fecha, 'usuario':usuario})
 
-
-
-
-
-
-
-
+def home_cliente(request):
+    fecha = datetime.datetime.now()
+    usuario = validarUsuarioRegistrado(request)
+    return render(request, 'home_duenio.html', {'fecha': fecha, 'usuario':usuario})
 
 def home_duenio(request):
     fecha = datetime.datetime.now()
-    return render(request, 'home_duenio.html', {'fecha': fecha})
-
-
-def nuevo_equipo(request):
-    fecha = datetime.datetime.now()
-    return render(request, 'nuevo_equipo.html', {'fecha': fecha})
+    usuario = validarUsuarioRegistrado(request)
+    return render(request, 'home_duenio.html', {'fecha': fecha, 'usuario':usuario})
 
 def tratamientos(request):
     fecha = datetime.datetime.now()
-    return render(request, 'tratamientos_general.html', {'fecha': fecha})
+    
+    equipos = EquipoTratamiento.objects.all()
+    tratamientos = Tratamiento.objects.all()
+    
+    return render(request, 'tratamientos_general.html', {'fecha': fecha, 'tratamientos': tratamientos, 'equipos':equipos})
 
 def tratamientos_duenio(request):
     fecha = datetime.datetime.now()

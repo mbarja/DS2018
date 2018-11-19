@@ -54,7 +54,7 @@ class Tecnico(models.Model):
     
 class Cliente(models.Model):
     nombre = models.CharField(max_length=50)
-    telefono = models.IntegerField()
+    telefono = models.BigIntegerField()
     mail = models.CharField(max_length=50)
     usuario = models.CharField(max_length=10)
     contrasenia = models.CharField(max_length=30)
@@ -118,6 +118,15 @@ class Mantenimiento(models.Model):
     
     def __str__(self):
         return '%s %s' % (self.equipo, self.fecha)
+    
+class Turno(models.Model):
+    cliente = models.ForeignKey('Cliente', on_delete=models.CASCADE)
+    tratamiento = models.ForeignKey('tratamiento', on_delete=models.CASCADE)
+    fecha = models.DateField(validators=[no_past])
+    
+    def __str__(self):
+        return '%s %s' % (self.cliente, self.tratamiento)
+    
 
     
     

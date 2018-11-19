@@ -5,8 +5,8 @@ from django.forms.widgets import Select
 from dataclasses import fields
 
 class LoginForm(forms.Form):
-    usuario = forms.CharField(label='usuario', max_length=15)
-    contrasenia = forms.CharField(widget=forms.PasswordInput)
+    user = forms.CharField(label='usuario', max_length=15)
+    pswd = forms.CharField(widget=forms.PasswordInput)
     widgets = {
             'contrasenia': forms.PasswordInput(),
         }
@@ -20,6 +20,19 @@ class EquipoForm(forms.ModelForm):
             'nombre': Textarea(attrs={'cols': 10, 'rows': 1}),
             'unidad_medida': Select(),
             'marca':Select()
+        }
+
+class EquipoModificarForm(forms.ModelForm):
+
+    class Meta:
+        model = Equipo
+        fields = '__all__'
+        exclude = ['num_serie']
+        widgets = {
+            'nombre': Textarea(attrs={'cols': 10, 'rows': 1}),
+            'unidad_medida': Select(),
+            'marca':Select(),
+
         }
         
         
@@ -47,6 +60,19 @@ class TecnicoForm(forms.ModelForm):
             'usuario': TextInput(attrs={'placeholder': 'Usuario', 'class': 'form-control'}),
             'contrasenia': TextInput(attrs={'placeholder': 'Password', 'class': 'form-control'}),
         }
+        
+class ClienteForm(forms.ModelForm):
+    
+    class Meta:
+        model = Cliente
+        fields = '__all__'
+        widgets = {
+            'nombre': TextInput(attrs={'placeholder': 'Nombre', 'class': 'form-control'}),
+            'mail': TextInput(attrs={'placeholder': 'Email', 'class': 'form-control'}),
+            'telefono': TextInput(attrs={'placeholder': 'Telefono', 'class': 'form-control'}),
+            'usuario': TextInput(attrs={'placeholder': 'Usuario', 'class': 'form-control'}),
+            'contrasenia': TextInput(attrs={'placeholder': 'Password', 'class': 'form-control'}),
+        }
 
 class PrecioUsoForm(forms.ModelForm):
     
@@ -54,6 +80,14 @@ class PrecioUsoForm(forms.ModelForm):
         model = PrecioPorUso
         fields = '__all__'
         equipo = forms.ModelChoiceField(queryset=Equipo.objects.all())
+
+class PrecioUsoModificarForm(forms.ModelForm):
+    
+    class Meta:
+        model = PrecioPorUso
+        fields = '__all__'
+        exclude = ['num_serie']
+        
         
 class EquipoTratamientoForm(forms.ModelForm):
     
@@ -80,3 +114,11 @@ class MantenimientoForm(forms.ModelForm):
         widgets = {
             'descripcion': Textarea(attrs={'cols': 80, 'rows': 10}),
         }
+    
+class TurnoForm(forms.Form):
+    
+    tratamiento = forms.ModelChoiceField(queryset=Tratamiento.objects.all())
+    fecha = forms.CharField(label='Rango de fechas', max_length=35)
+    widgets = {
+            'fechas': TextInput(attrs={'placeholder': 'Nombre', 'class': 'form-control', 'id':'fecha', 'name':'datetimes'}),
+    }

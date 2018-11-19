@@ -1,0 +1,59 @@
+{% extends "base_duenio.html" %}
+{% block cuerpo %}
+
+<div class="container-fluid" style="width:80%">
+<h1>Datos del Equipo</h1>
+    <form method="POST" class="post-form">
+    {% csrf_token %}
+    <input type="hidden" name="num_serie2" value={{ num_serie }}>
+    <table>
+		<tr>
+		    <td id="tabla_label_general">Nombre</td>
+		    <td id="tabla_input_general">{{ form.nombre }}</td> 
+		    <td id="tabla_mensaje_error">
+		    	{{ form.nombre.errors }}
+		    <td>  
+		</tr>
+		<tr>
+		    <td id="tabla_label_general">Marca</td>
+		    <td id="tabla_input_general">{{ form.marca }}</td>
+		    <td id="tabla_mensaje_error">
+		    	{{ form.marca.errors }}
+		    <td>   
+		</tr>
+		<tr>
+		    <td id="tabla_label_general">Fecha de Compra</td>
+		    <td id="tabla_input_general">{{ form.fecha_compra }}</td> 
+		    <td id="tabla_mensaje_error">
+		    	{{ form.fecha_compra.errors }}
+		    <td> 
+		</tr>
+		<tr>
+		    <td id="tabla_label_general">Precio por Día</td>
+		    <td id="tabla_input_general">{{ form.precio_dia }}</td>
+		    <td id="tabla_mensaje_error">
+		    	{{ form.precio_dia.errors }}
+		    <td>  
+		</tr>
+		<tr>
+		    <td id="tabla_label_general">Período para Mantenimiento</td>
+		    <td id="tabla_input_general">{{ form.periodo_mantenimiento }}</td>
+		    <td id="tabla_mensaje_error">
+		    	{{ form.periodo_mantenimiento.errors }}
+		    <td>  
+		</tr>
+		<tr>
+		    <td id="tabla_label_general">Unidad de Medida</td>
+		    <td id="tabla_input_general">{{ form.unidad_medida }}</td> 
+		</tr>
+		<tr>
+		    <td id="tabla_label_general"></td>
+		    <td id="tabla_input_general" style="padding-top:20px;"><input type="submit" class="btn btn-primary btn-m" value="Guardar"> 
+		</tr>
+    
+     </form>
+    </table>
+        
+   
+</div>
+{% endblock %}

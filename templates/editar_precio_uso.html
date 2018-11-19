@@ -1,0 +1,58 @@
+{% extends "base_duenio.html" %}
+{% block cuerpo %}
+
+<div class="container-fluid" style="width:80%">
+<h1>Seleccionar Equipo</h1>
+<h2>{{ mensaje }}</h2>
+	{% csrf_token %}
+	<form action='' method="get">
+    <table>
+		<tr>
+			<td id="estado_alquiler"> Seleccionar equipo: </td>
+			{% if equipos %}
+		    <td id="estado_alquiler" style="padding-left:15px"><select name="equipo" id="id_equipo" style="color:black">
+			    {%for equipo in equipos%}
+			        <option value="{{equipo.num_serie}}">{{ equipo }}</option>
+			    {%endfor%}  
+			</select></td>
+			{% else %}
+			<td id="estado_alquiler" style="padding-left:15px"> {{ equipoSeleccionado }} </td>
+			{% endif %}
+		    <td id="tabla_label_general"></td>
+		    <td id="tabla_input_general" style="padding-top:20px;"><button type="submit" class="save btn btn-success" value="buscar" name="buscar">Buscar</button> 
+		</tr>
+    
+		<tr>
+			{% if precios %}
+			<input type="hidden" name="num_serie" value={{ num_serie }}>
+			<td id="estado_alquiler"> Seleccionar rango: </td>
+		    <td id="estado_alquiler" style="padding-left:15px">
+		    <select name="precio" id="id_precio" style="color:black">
+			    {%for precio in precios%}
+			        <option value="{{precio.id}}">Rango: {{ precio.rango }} - Valor: ${{ precio.precio }}</option>
+			    {%endfor%}  
+			</select> </td>
+			<td id="tabla_label_general"></td>
+		    <td id="tabla_input_general" style="padding-top:20px;"><button type="submit" class="save btn btn-success" value="filtrarPrecio" name="filtrarPrecio">Editar Pecio</button>
+			
+		</tr>
+		<tr>
+			<td></td>
+			<td id="estado_alquiler"><input type="number" name="rango" id="rango" min="1" placeholder="rango">  </td>
+			<td></td>
+		     
+		</tr>
+		<tr>
+			<td></td>
+			<td id="estado_alquiler" style="padding-top:15px"><input type="number" name="nuevoPrecio" id="nuevoPrecio" min="0" step=".01" placeholder="precio"> </td>
+			<td></td>
+		     
+		</tr>
+			{% endif %}
+    
+     </form>
+    </table>
+        
+   
+</div>
+{% endblock %}
