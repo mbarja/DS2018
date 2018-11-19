@@ -70,3 +70,13 @@ class AlquilerForm(forms.Form):
     widgets = {
             'fechas': TextInput(attrs={'placeholder': 'Nombre', 'class': 'form-control', 'id':'fechas', 'name':'datetimes'}),
     }
+    
+class MantenimientoForm(forms.ModelForm):
+    
+    class Meta:
+        model = Mantenimiento
+        fields = '__all__'
+        equipo = forms.ModelChoiceField(queryset=Equipo.objects.filter(marca='C'))
+        widgets = {
+            'descripcion': Textarea(attrs={'cols': 80, 'rows': 10}),
+        }

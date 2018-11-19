@@ -203,6 +203,58 @@ def validarPrecioPorUso(form):
     else:
         return False
     
+def registrar_mantenimiento(request):
+    errors=[]
+    fecha = datetime.datetime.now()
+    
+    usuario = validarUsuarioRegistrado(request)
+    
+    if usuario==NULL:
+
+        formlogin = LoginForm()
+        
+        errors.append('Debe estar logueado en el sistema para poder dar de alta un equipo')
+        
+        return render(request, 'home.html', {'fecha': fecha, 'formlogin':formlogin, 'errores':errors})
+    
+    if request.method == 'POST':
+        
+        form = MantenimientoForm(request.POST)
+
+        if form.is_valid():
+           
+            mantenimiento = form.save(commit=False)
+            
+            if (validarMantenimiento(form)):
+            
+                mantenimiento.save()
+                
+                return render(request, 'mantenimiento_registrado.html', {'fecha': fecha, 'usuario':usuario})
+            
+            else:
+                errors.append('Ya existe un mantenimiento registrado para el equipo en esa fecha')
+                return render(request, 'registrar_mantenimiento.html', {'fecha': fecha, 'form':form, 'errores':errors, 'usuario':usuario}) 
+        
+        else:
+            
+            return render(request, 'registrar_mantenimiento.html', {'fecha': fecha, 'form':form, 'errores':errors, 'usuario':usuario})    
+    
+    form = MantenimientoForm()
+    
+    return render(request, 'registrar_mantenimiento.html', {'fecha': fecha, 'form':form, 'errors':errors, 'usuario':usuario})
+
+def validarMantenimiento(form):
+    equipo = form.cleaned_data['equipo']
+    fecha = form.cleaned_data['fecha']
+    
+    mantenimiento = Mantenimiento.objects.filter(equipo=equipo).filter(fecha=fecha)
+
+    if not mantenimiento:
+        return True
+    
+    else:
+        return False
+    
 def alta_equipo_tratamiento(request):
     errors=[]
     fecha = datetime.datetime.now()
@@ -334,11 +386,13 @@ def estado_alquileres_tecnico(request):
     
     dniUsuario = consultaDni[0]
     
-    alquileres = Alquiler.objects.filter(tecnico=dniUsuario)
+    alquileres = Alquiler.objects.filter(tecnico=dniUsuario).order_by('-id')
     
     precios = calcularPreciosAlquileres(alquileres)
     
-    return render(request, 'estado_alquileres_tecnico.html', {'fecha': fecha, 'usuario':usuario, 'alquileres':alquileres, 'precios':precios})
+    excesos = obtenerExcesosPorUso()
+    
+    return render(request, 'estado_alquileres_tecnico.html', {'fecha': fecha, 'usuario':usuario, 'alquileres':alquileres, 'precios':precios, 'excesos': excesos})
 
 def calcularPreciosAlquileres(alquileres):
     precios = []

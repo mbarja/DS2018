@@ -1,0 +1,16 @@
+{% extends "base_duenio.html" %}
+{% block cuerpo %}
+
+<div class="container-fluid" style="width:80%">
+
+    {% csrf_token %}
+   <div class="jumbotron">
+	  <h1 class="display-4">Mantenimiento registrado con éxito!</h1>
+	  <p id="mensaje_reserva_exitosa" class="lead">Se ha registrado el mantenimiento del equipo seleccionado en el sistema. </p>
+	  <hr class="my-4">
+	  <p id="mensaje_reserva_exitosa_precio" class="lead"></p>
+	  <a class="btn btn-primary btn-lg" href="../registrar_mantenimiento" role="button">Registrar otro mantenimiento</a>
+	  <a class="btn btn-primary btn-lg" href="../equipos_duenio" role="button">Ver equipos</a>
+	</div>
+</div>
+{% endblock %}

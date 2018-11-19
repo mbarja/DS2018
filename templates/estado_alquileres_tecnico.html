@@ -9,13 +9,11 @@
 <form action='' method="get">
 	<tr>
 	    <td>
-		    	<div class="alert" role="alert" 
-		    	style="background-color:#F8FA89;" 
-		    	onclick="mostrarDiv('{{ alquiler.id }}')" id="alquiler_reservado"> 
+		    	<div class="alert" role="alert" style="background-color:#F8FA89;" id="{{ alquiler.id }}"> 
 				  <input type="hidden" name="id_alquiler" value={{ alquiler.id }}>
 				  <table id='tabla_reservado'>
 		  				<tr> 
-		  					<td id="estado_alquiler_equipo">{{ alquiler.equipo }}</td>
+		  					<td id="estado_alquiler_equipo" name="{{ alquiler.equipo }}">{{ alquiler.equipo }}</td>
 		  				</tr>
 		  				<tr>
 		  				{% if alquiler.estado == 'R' %}
@@ -34,7 +32,7 @@
 				</div>
 	    </td>
 	    <td style="padding-left: 10px;">
-	    		<div class="alert" role="alert" style="background-color:#DBF0EE; color:black; display: none;" id="{{ alquiler.id }}">
+	    		<div class="alert" role="alert" style="background-color:#DBF0EE; color:black;" >
 	    			<table>
 		  				<tr> 
 		  					<td><b>Desde: </b></td>
@@ -62,14 +60,45 @@
 	    </td>
 	    <td style="padding-left: 10px;"> <button type="submit" class="save btn btn-danger" value="cancelar" name="cancelar">Cancelar</button>	
 	    </td>
-	    {% endif %}
-	    {% if alquiler.estado == 'C' %}
+	    {% elif alquiler.estado == 'C' %}
 	     <td style="padding-left: 10px;"><button type="submit" class="save btn btn-danger" value="cancelar" name="cancelar">Cancelar</button>	
 	    </td>
+	    {% elif alquiler.estado == 'F' %}
+	    {% for exceso in excesos %}
+				    	{% if exceso.alquiler == alquiler %}
+				    		<td></td>
+				    		<td id="estado_reserva" style="color:red; font-weight: bold;"> *se debe pagar ${{ exceso.precio }} Por exceso de uso</td>
+				    	{% endif %}
+				    {% endfor %}
 	    {% endif %}
 	 </tr>
 	 </form>
 	 {% endfor %}
 </table>
+<script>
+$( document ).ready(function() {
+	
+	$('#tabla_reservado td').each(function() {
+	    var cellText = $(this).html();
+	    
+	    if(cellText=='Finalizado'){
+	    	var parent = $(this).parent().closest('div').attr("id");
+	    	$($('#' + parent)).css("background-color", "#d6d6c2");
+	    }
+	    if(cellText=='En curso'){
+	    	var parent = $(this).parent().closest('div').attr("id");
+	    	$($('#' + parent)).css("background-color", "#00e68a");
+	    }
+	    if(cellText=='Confirmado'){
+	    	var parent = $(this).parent().closest('div').attr("id");
+	    	$($('#' + parent)).css("background-color", "#6699ff");
+	    }
+	    if(cellText=='Cancelado'){
+	    	var parent = $(this).parent().closest('div').attr("id");
+	    	$($('#' + parent)).css("background-color", "#adad85");
+	    }
+	});
+});
+		</script>
 
 {% endblock %}

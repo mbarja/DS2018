@@ -1,0 +1,59 @@
+{% extends "base_duenio.html" %}
+{% load staticfiles %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.css' %}">	
+{% block divcentro %}
+<div class="container-fluid" style="width:80%">
+<h1>Datos del Mantenimiento</h1>
+{% for error in errores %}
+	<h3 style="color:red; font-weight: bold;">* {{ error }}</h3>
+{% endfor %}
+		
+    <form method="POST" class="post-form">
+    {% csrf_token %}
+    
+    <table>
+    	<tr>
+		    <td id="tabla_label_general">Equipo</td>
+		    <td id="tabla_input_general">{{ form.equipo }}</td>
+		    <td id="tabla_mensaje_error">
+		    	{{ form.equipo.errors }}
+		    <td> 
+		</tr>
+		<tr>
+		    <td id="tabla_label_general">Fecha</td>
+		    <td id="tabla_input_general">{{ form.fecha }}</td> 
+		    <td id="tabla_mensaje_error">
+		    	{{ form.fecha.errors }}
+		    <td>  
+		</tr>
+		<tr>
+		    <td id="tabla_label_general">Descripción</td>
+		    <td id="tabla_input_general">{{ form.descripcion }}</td>
+		    <td id="tabla_mensaje_error">
+		    	{{ form.descripcion.errors }}
+		    <td>   
+		</tr>
+		<tr>
+		    <td id="tabla_label_general"></td>
+		    <td id="tabla_input_general" style="padding-top:20px;"><button type="submit" class="save btn btn-default">Guardar</button></td> 
+		</tr>
+    
+     </form>
+    </table>
+        
+   
+</div>
+
+<script>
+	$(function() {
+	  $("form input[name='fecha'").daterangepicker({
+	    timePicker: false,
+	    singleDatePicker: true,
+	    startDate: moment().startOf('hour').add(24, 'hour'),
+	    locale: {
+	      format: 'YYYY-MM-DD'
+	    }
+	  });
+	});
+</script>
+{% endblock %}

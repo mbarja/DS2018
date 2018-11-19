@@ -16,6 +16,9 @@
 		<td></td>
 	<tr>
 	{% for equipo in equipos %}
+	{% csrf_token %}
+	<form action='' method="get">
+	<input type="hidden" name="id_alquiler" value={{ equipo.id }}>
 	    <td>
 	    	<div class="alert" role="alert" style="background-color:#C1D8D7;"> 
 			  <table id='tabla_reservado'>
@@ -29,7 +32,7 @@
 			</div>
 	    </td>
 	    <td style="padding-left: 10px;">
-	    		<div class="alert" role="alert" style="background-color:#86FA88; color:black;" id="alquilado_candela">
+	    		<div class="alert" role="alert" style="background-color:#86FA88; color:black;" id="{{ equipo.num_serie }}">
 	    			<table id="tabla_estados_equipos">
 		  				<tr> 
 		  				{% for estado in estados %}
@@ -41,25 +44,47 @@
 		    		</table>
 	    		</div> 
 	    </td>
-	    <td style="padding-left: 10px;"> <p id="mantenimientoCandela" style="font-size:30px;
-			font-weight: bold;
-			font-family: 'Nanum Gothic', sans-serif;
-		    text-align: center;
-		    color: #47504F;"> 
+	    {% if equipo.marca == 'C' %}
+	    <td style="padding-left: 10px;"> 
+	    
+	    <p id="mantenimientoCandela" style="font-size:30px; font-weight: bold;font-family: 'Nanum Gothic', sans-serif;text-align: center; color: #47504F;"> 
+		    
 		    {% for pulso in pulsos %}
 	               			{% if pulso.equipo == equipo %}
 	               				{{ pulso.pulsos }} 
 	               			{% endif %}
-	        {% endfor %}</p>	
+	        {% endfor %}
+	        
+	        </p>
+	        	
 	    </td>
-	    <td style="padding-left: 10px;"> <a class="btn btn-primary btn-lg" onclick="mostrarDiv('formulario_finalizar_alquiler_candela')" role="button" id="boton_finalizar">Finalizar Alquiler</a>
+	    
+	    
+	    <td style="padding-left: 10px;"> <button type="submit" class="save btn btn-success" value="mantenimiento" name="mantenimiento">Registrar Mantenimiento</button>
 	    </td>
+	    {% endif %}
 	 </tr>
 	 {% endfor %}
 	 
 	 
 </table>
 </div>
+<script>
+$( document ).ready(function() {
+	
+	$('#tabla_estados_equipos td').each(function() {
+	    var cellText = $(this).html();
+	    if(cellText=='Libre'){
+	    	var parent = $(this).parent().closest('div').attr("id");
+	    	$('#' + parent).css("background-color", "#00e68a");
+	    }
+	    if(cellText=='En Curso'){
+	    	var parent = $(this).parent().closest('div').attr("id");
+	    	$('#' + parent).css("background-color", "#6699ff");
+	    }
+	});
+});
+		</script>
 
 
 {% endblock %}
