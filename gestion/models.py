@@ -109,8 +109,15 @@ class Alquiler(models.Model):
     estado_final = models.BigIntegerField(null=True, blank=True, validators=[negativo])
     
     def __str__(self):
-        return '%s %s' % (self.tecnico, self.equipo)
+        return '%s %s' % (self.equipo, self.estado)
+
+class Mantenimiento(models.Model):
+    equipo = models.ForeignKey('Equipo', on_delete=models.CASCADE)
+    fecha = models.DateField(validators=[no_future])
+    descripcion = models.CharField(max_length=2000)
     
+    def __str__(self):
+        return '%s %s' % (self.equipo, self.fecha)
 
     
     

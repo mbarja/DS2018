@@ -15,14 +15,15 @@
 		<td id="titulo_tabla_equipos"> (pulsos)</td>
 		<td></td>
 	<tr>
+	{% for equipo in equipos %}
 	    <td>
 	    	<div class="alert" role="alert" style="background-color:#C1D8D7;"> 
 			  <table id='tabla_reservado'>
 	  				<tr> 
-	  					<td id="estado_alquiler_equipo">Laser Candela</td>
+	  					<td id="estado_alquiler_equipo">{{ equipo.nombre }}</td>
 	  				</tr>
 	  				<tr>
-	  					<td id="estado_alquiler">90097</td>
+	  					<td id="estado_alquiler">{{ equipo.num_serie }}</td>
 	  				</tr>
 	    		</table>
 			</div>
@@ -31,7 +32,11 @@
 	    		<div class="alert" role="alert" style="background-color:#86FA88; color:black;" id="alquilado_candela">
 	    			<table id="tabla_estados_equipos">
 		  				<tr> 
-	  						<td id="estado_alquiler_equipo">Alquilado</td>
+		  				{% for estado in estados %}
+	               			{% if estado.equipo == equipo %}
+	  						<td id="estado_alquiler_equipo">{{ estado.estado }}</td>
+	  						{% endif %}
+	  					{% endfor %}
 	  					</tr>
 		    		</table>
 	    		</div> 
@@ -40,130 +45,21 @@
 			font-weight: bold;
 			font-family: 'Nanum Gothic', sans-serif;
 		    text-align: center;
-		    color: #47504F;"> 40000 </p>	
+		    color: #47504F;"> 
+		    {% for pulso in pulsos %}
+	               			{% if pulso.equipo == equipo %}
+	               				{{ pulso.pulsos }} 
+	               			{% endif %}
+	        {% endfor %}</p>	
 	    </td>
 	    <td style="padding-left: 10px;"> <a class="btn btn-primary btn-lg" onclick="mostrarDiv('formulario_finalizar_alquiler_candela')" role="button" id="boton_finalizar">Finalizar Alquiler</a>
 	    </td>
 	 </tr>
-	 <tr>
-	    <td>
-	    	<div class="alert" role="alert" style="background-color:#F9B1F9;"> 
-			  <table>
-	  				<tr> 
-	  					<td id="estado_alquiler_equipo">Venus Legacy</td>
-	  				</tr>
-	  				<tr>
-	  					<td id="estado_alquiler">15001</td>
-	  				</tr>
-	    		</table>
-			</div>
-	    </td>
-	    <td style="padding-left: 10px;">
-	    		<div class="alert" role="alert" style="background-color:#86FA88; color:black;" id="alquilado_venus">
-	    			<table>
-		  				<tr> 
-	  						<td id="estado_alquiler_equipo">Alquilado</td>
-	  					</tr>
-		    		</table>
-	    		</div> 
-	    </td>
-	    <td>
-	    </td>
-	    <td style="padding-left: 10px;"> <a class="btn btn-primary btn-lg" onclick="mostrarDiv('formulario_finalizar_alquiler_venus')" role="button">Finalizar Alquiler</a>
-	    </td>
-	 </tr>
+	 {% endfor %}
 	 
-	 <tr>
-	    <td>
-	    	<div class="alert" role="alert" style="background-color:#C1D8D7;"> 
-			  <table id='tabla_reservado'>
-	  				<tr> 
-	  					<td id="estado_alquiler_equipo">Laser Candela</td>
-	  				</tr>
-	  				<tr>
-	  					<td id="estado_alquiler">90098</td>
-	  				</tr>
-	    		</table>
-			</div>
-	    </td>
-	    <td style="padding-left: 10px;">
-	    		<div class="alert" role="alert" style="background-color:#F7F55D; color:black;">
-	    			<table>
-		  				<tr> 
-	  						<td id="estado_alquiler_equipo">Libre</td>
-	  					</tr>
-		    		</table>
-	    		</div> 
-	    </td>
-	    <td style="padding-left: 10px;"> <p id="mantenimiento" style="color:red"> 5000 </p> 	
-	    </td>
-	    <td style="padding-left: 10px;"> 
-	    </td>
-	 </tr>
 	 
 </table>
 </div>
 
-<div id="formulario_finalizar_alquiler_candela" style="display: none;" class="form-inline">
-
-<h2>Equipo: Laser Candela 90097</h2>
-
-<table id=tabla_formulario_candela>
-<tr>
-	<td id="tabla_formulario_finalizar">Desde: </td>
-	<td id="tabla_formulario_finalizar">15/10/2018</td>
-<tr>
-	<td id="tabla_formulario_finalizar">Hasta: </td>
-	<td id="tabla_formulario_finalizar">22/10/2018</td>
-</tr>
-<tr>
-	<td id="tabla_formulario_finalizar">Estado Inicial: </td>
-	<td id="tabla_formulario_finalizar">57980</td>
-</tr>
-<tr>
-	<td id="tabla_formulario_finalizar">Estado Final </td>
-	<td style="padding-left:15px"><input class="form-control form-control-sm" type="text" placeholder="Estado Final" id="estado_final"></td>
-</tr>
-<tr>
-
-	<td style="padding-top: 20px;"><a class="btn btn-primary btn-lg" onclick="finalizar_alquiler_candela('estado_final', 'tabla_formulario_candela')" role="button">Finalizar</a></td>
-</tr>
-
-</table>
-
-
-</div>
-
-<div id="formulario_iniciar_alquiler_candela" style="display: none;" class="form-inline">
-
-<h2>Equipo: Laser Candela 90098</h2>
-
-<table id=tabla_formulario_candela_iniciar>
-<tr>
-	<td id="tabla_formulario_finalizar">Desde: </td>
-	<td style="padding-left:15px"><input class="form-control form-control-sm" type="text" placeholder="Estado Final" id="desde"></td>
-<tr>
-	<td id="tabla_formulario_finalizar">Hasta: </td>
-	<td style="padding-left:15px"><input class="form-control form-control-sm" type="text" placeholder="Estado Final" id="hasta"></td>
-</tr>
-<tr>
-	<td id="tabla_formulario_finalizar">Estado Inicial: </td>
-	<td style="padding-left:15px"><input class="form-control form-control-sm" type="text" placeholder="Estado Final" id="estado_final"></td>
-</tr>
-<tr>
-	<td> </td>
-	<td style="padding-top: 20px;"><a class="btn btn-primary btn-lg" onclick="iniciar_alquiler_candela('tabla_formulario_candela_iniciar')" role="button">Iniciar</a></td>
-</tr>
-
-</table>
-
-
-</div>
-
-<div id="formulario_finalizar_alquiler_venus" style="display: none;" class="form-inline">
-
-<p>finalizar venus</p>
-
-</div>
 
 {% endblock %}

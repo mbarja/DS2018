@@ -354,7 +354,6 @@ def calcularPreciosAlquileres(alquileres):
 
         precio = {'alquiler':alquiler, 'precio':(cantidad_dias*precio)}
         precios.append(precio)
-        print(precios)
         
     return precios
         
@@ -372,6 +371,163 @@ def registrarAlquiler(idEquipo, desde, hasta, dniUsuario):
     
     return alquiler
 
+def reservas(request):
+    errors = []
+    fecha = datetime.datetime.now()
+    usuario = validarUsuarioRegistrado(request)
+    
+    if 'id_alquiler' in request.GET:
+        
+        id_alquiler = request.GET['id_alquiler']
+        
+        alquiler = Alquiler.objects.get(id=id_alquiler)
+        
+        alquiler.id = id_alquiler
+        
+        if 'iniciar' in request.GET:
+            #no pueden estar mas de un equipo en curso al mismo tiempo
+            chequearAlquiler =  Alquiler.objects.filter(equipo=alquiler.equipo).filter(estado='E').filter(~Q(id = alquiler.id))
+            
+            if not chequearAlquiler:
+                alquiler.estado = 'E'
+                alquiler.estado_inicial = obtenerEstadoInicial(alquiler.equipo)
+            else: 
+                errors.append('Ya hay alquiler en curso para el equipo '+str(alquiler.equipo))
+        
+        if 'finalizar' in request.GET:
+            estadoFinal = request.GET['estado_final_valor']
+            if estadoFinal:
+                alquiler.estado_final = estadoFinal
+                alquiler.estado = 'F'
+            else:
+                nombreEquipo = alquiler.equipo
+
+                errors.append('Debe ingresar un estado final para poder finalizar el alquiler del equipo '+str(nombreEquipo))
+        
+        alquiler.save()
+    
+    reservas = Alquiler.objects.all().order_by('-id')
+    excesos = obtenerExcesosPorUso()
+    return render(request, 'reservas.html', {'fecha': fecha, 'usuario':usuario, 'reservas':reservas, 'excesos':excesos, 'errores':errors})
+
+
+def obtenerExcesosPorUso():
+    
+    excesos = []
+    
+    alquileres = Alquiler.objects.filter(estado='F')
+    
+    for alquiler in alquileres:
+        
+        pulsosUtilizados = (alquiler.estado_final - alquiler.estado_inicial)
+        
+        print('pulsos utilizados: ', pulsosUtilizados)
+       
+        preciosPorUso = PrecioPorUso.objects.filter(equipo = alquiler.equipo).order_by('rango')
+        
+        precioPorExceso = 0
+        rango=0
+        
+        for precio in preciosPorUso:
+            
+            if pulsosUtilizados > precio.rango:
+                
+                precioPorExceso = precio.precio
+                rango = precio.rango
+        
+        print('rango: ',rango)
+        print('precio por exceso: ', precioPorExceso)        
+        pulsosDeMas = pulsosUtilizados - rango
+        
+        if rango != 0:
+            
+           excesos.append({'alquiler':alquiler, 'precio':(pulsosDeMas*precioPorExceso)})     
+               
+        
+    return excesos
+
+def obtenerEstadoInicial(equipo):
+    
+    if equipo.marca == 'V':
+        return '0'
+    else:
+    
+        alquiler = Alquiler.objects.filter(equipo=equipo).filter(estado='F').order_by('-hasta')[:1]
+        
+        if not alquiler:
+            return '0'
+        else:
+            for a in alquiler:
+                return getattr(a, 'estado_final')
+
+def equipos_duenio(request):
+    fecha = datetime.datetime.now()
+    usuario = validarUsuarioRegistrado(request)
+    
+    equipos = Equipo.objects.all()
+    
+    estados = obtenerEstadosEquipos(equipos)
+    
+    pulsos = obtenerPulsosParaMantenimiento(equipos)
+    
+    return render(request, 'equipos_duenio.html', {'fecha': fecha, 'usuario':usuario, 'equipos':equipos, 'estados':estados, 'pulsos': pulsos})
+
+
+def obtenerEstadosEquipos(equipos):
+    
+    hoy = datetime.datetime.now()
+    estados=[]
+    
+    for equipo in equipos:
+        
+        alquileres = Alquiler.objects.filter(equipo=equipo).filter(desde__lte= hoy).filter(hasta__gte= hoy).filter(~Q(estado = 'O')).filter(~Q(estado = 'F'))
+        
+        if not alquileres:
+            estado= {'equipo':equipo, 'estado':'Libre'}
+            estados.append(estado)
+        
+        else:
+            for alquiler in alquileres:
+                
+                estadoAlquiler = getattr(alquiler, 'estado')
+                if estadoAlquiler=='R':
+                    estadoAlquiler = 'Reservado'
+                if estadoAlquiler=='C':
+                    estadoAlquiler = 'Confirmado'
+                if estadoAlquiler=='E':
+                    estadoAlquiler = 'En Curso'
+                
+                estado = {'equipo':equipo, 'estado':estadoAlquiler}
+                estados.append(estado)
+            
+    return estados  
+
+def obtenerPulsosParaMantenimiento(equipos):
+    mantenimientos = []
+    pulsosUsados=0
+    
+    for equipo in equipos:
+        
+        equipoMantenimiento = (getattr(equipo, 'periodo_mantenimiento'))
+        
+        alquileres = Alquiler.objects.filter(equipo=equipo).filter(Q(estado='F') | Q(estado='E')).order_by('-hasta')[:1]
+        
+        if not alquileres:
+            pulsosusados = 0 
+        
+        else:
+            for alquiler in alquileres:
+                if getattr(alquiler, 'estado')=='F':
+                    pulsosUsados = getattr(alquiler, 'estado_final')
+                    
+                else:
+                    pulsosUsados = getattr(alquiler, 'estado_inicial')
+                    
+        #cuando haya mantenimientos sumarle esa cantidad (equipoMantenimiento * cantidad de mantenimientos Realizados)
+        
+        mantenimientos.append({'equipo':equipo, 'pulsos':(equipoMantenimiento-pulsosUsados)})
+        
+    return mantenimientos
 
 def equipos_tecnico(request):
     
@@ -416,9 +572,6 @@ def home_duenio(request):
     fecha = datetime.datetime.now()
     return render(request, 'home_duenio.html', {'fecha': fecha})
 
-def equipos_duenio(request):
-    fecha = datetime.datetime.now()
-    return render(request, 'equipos_duenio.html', {'fecha': fecha})
 
 def nuevo_equipo(request):
     fecha = datetime.datetime.now()

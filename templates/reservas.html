@@ -1,0 +1,89 @@
+{% extends "base_duenio.html" %}
+{% load staticfiles %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.css' %}">	
+
+{% block divcentro %}
+{% for error in errores %}
+	<h3 style="color:red; font-weight: bold;">* {{ error }}</h3>
+{% endfor %}
+<table class="table" style="width:100%; color:black">
+  <thead>
+            <tr>
+                <th id="estado_reserva_titulo">Tecnico</th>
+                <th id="estado_reserva_titulo">Equipo</th>
+                <th id="estado_reserva_titulo">Desde</th>
+                <th id="estado_reserva_titulo">Hasta</th>
+                <th id="estado_reserva_titulo">Estado</th>
+                <th id="estado_reserva_titulo">Estado Inicial</th>
+                <th id="estado_reserva_titulo">Estado Final</th>
+                <th id="estado_reserva_titulo"> </th>
+                <th id="estado_reserva_titulo"> </th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for reserva in reservas %}
+		{% csrf_token %}
+		<form action='' method="get">
+		<input type="hidden" name="id_alquiler" value={{ reserva.id }}>
+        	<tr>
+        		<td id="estado_reserva"> {{ reserva.tecnico }}</td>
+        		<td id="estado_reserva"> {{ reserva.equipo }}</td>
+        		<td id="estado_reserva"> {{ reserva.desde }}</td>
+        		<td id="estado_reserva"> {{ reserva.hasta }}</td>
+        		{% if reserva.estado == 'R' %}
+				<td id="estado_reserva">Reservado</td>
+				{% elif reserva.estado == 'O' %}
+				<td id="estado_reserva">Cancelado</td>
+				{% elif reserva.estado == 'C' %}
+				<td id="estado_reserva">Confirmado</td>
+				{% elif reserva.estado == 'E' %}
+				<td id="estado_reserva">En curso</td>
+				{% elif reserva.estado == 'F' %}
+				<td id="estado_reserva">Finalizado</td>
+				{% endif %}
+				{% if reserva.estado_inicial == null %}
+				<td id="estado_reserva"> - </td>
+				{% else %}
+        		<td id="estado_reserva"> {{ reserva.estado_inicial }}</td>
+        		{% endif %}
+        		{% if reserva.estado_final == null %}
+				<td id="estado_reserva"> - </td>
+				{% else %}
+        		<td id="estado_reserva"> {{ reserva.estado_final }}</td>
+        		{% endif %}
+        		
+        		{% if reserva.estado == 'C' %}
+	    		<td style="padding-left: 10px; padding-top: 10px;"> <button type="submit" class="save btn btn-success" value="iniciar" name="iniciar">Iniciar</button>	
+	    		</td>
+	    		<td></td>
+			    {% elif reserva.estado == 'E' %}
+			     <td style="padding-left: 10px; padding-top: 10px;"><button type="submit" class="save btn btn-danger" value="finalizar" name="finalizar">Finalizar</button>	
+			    </td>
+			    <td id="estado_reserva"><input type="number" name="estado_final_valor" min="{{ reserva.estado_inicial }}" placeholder="Estado Final"></td>
+			    {% elif reserva.estado == 'F' %}
+			    
+				    {% for exceso in excesos %}
+				    	{% if exceso.alquiler == reserva %}
+				    	<td></td>
+				    		<td id="estado_reserva" style="color:red; font-weight: bold;"> *se debe cobrar ${{ exceso.precio }} Por exceso de uso</td>
+				    	{% endif %}
+				    {% endfor %}
+				{% else %}
+				<td></td>
+				<td></td>
+        		{% endif %}
+        	</tr>
+        	</form>
+        	{% endfor %}
+        </tbody>
+</table>
+
+<script type="text/javascript">
+$(document).ready(function () {
+	 $('#example').DataTable({
+		    "pagingType": "simple"
+	  });
+	  $('.dataTables_length').addClass('bs-select');
+	});
+</script>
+{% endblock %}
