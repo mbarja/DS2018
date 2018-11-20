@@ -579,7 +579,7 @@ def cancelarReservasVencidas():
 
 def enviarMail(alquiler,tecnico):
     
-    mensaje = 'Se solicita confirmar el alquiler del equipo '+str(alquiler.equipo)+'. Para las fechas '+ str(alquiler.desde)+' - '+str(alquiler.hasta)
+    mensaje = 'Se solicita confirmar el alquiler del equipo '+str(alquiler.equipo)+'. Para las fechas '+ str(alquiler.desde)+' - '+str(alquiler.hasta)+'. Recuerde que las reservas se deben CONFIRMAR hasta un dia antes de la fecha de inicio.'
     send_mail(
     'Confirmacion de alquiler',
     mensaje,
