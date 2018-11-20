@@ -61,6 +61,20 @@ class TecnicoForm(forms.ModelForm):
             'contrasenia': TextInput(attrs={'placeholder': 'Password', 'class': 'form-control'}),
         }
         
+class TecnicoModificarForm(forms.ModelForm):
+    
+    class Meta:
+        model = Tecnico
+        exclude = ['dni', 'usuario']
+        widgets = {
+            'nombre': TextInput(attrs={'placeholder': 'Nombre', 'class': 'form-control'}),
+            'mail': TextInput(attrs={'placeholder': 'Email', 'class': 'form-control'}),
+            'direccion': TextInput(attrs={'placeholder': 'Direccion', 'class': 'form-control'}),
+            'telefono': TextInput(attrs={'placeholder': 'Telefono', 'class': 'form-control'}),
+            'usuario': TextInput(attrs={'placeholder': 'Usuario', 'class': 'form-control'}),
+            'contrasenia': TextInput(attrs={'placeholder': 'Password', 'class': 'form-control'}),
+        }
+        
 class ClienteForm(forms.ModelForm):
     
     class Meta:

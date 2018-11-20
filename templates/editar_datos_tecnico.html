@@ -1,0 +1,56 @@
+{% extends "base_tecnico.html" %}
+{% block cuerpo %}
+
+<div class="container-fluid" style="width:80%">
+<h1>Datos del Equipo</h1>
+    <form method="POST" class="post-form">
+    {% csrf_token %}
+    <input type="hidden" name="id_tecnico" value={{ dni }}>
+    <table>
+		<tr>
+		    <td id="tabla_label_general">Nombre</td>
+		    <td id="tabla_input_general">{{ form.nombre }}</td> 
+		    <td id="tabla_mensaje_error">
+		    	{{ form.nombre.errors }}
+		    <td>  
+		</tr>
+		<tr>
+		    <td id="tabla_label_general">Mail</td>
+		    <td id="tabla_input_general">{{ form.mail }}</td>
+		    <td id="tabla_mensaje_error">
+		    	{{ form.mail.errors }}
+		    <td>   
+		</tr>
+		<tr>
+		    <td id="tabla_label_general">Dirección</td>
+		    <td id="tabla_input_general">{{ form.direccion }}</td> 
+		    <td id="tabla_mensaje_error">
+		    	{{ form.direccion.errors }}
+		    <td> 
+		</tr>
+		<tr>
+		    <td id="tabla_label_general">Teléfono</td>
+		    <td id="tabla_input_general">{{ form.telefono }}</td>
+		    <td id="tabla_mensaje_error">
+		    	{{ form.telefono.errors }}
+		    <td>  
+		</tr>
+		<tr>
+		    <td id="tabla_label_general">Usuario</td>
+		    <td id="tabla_input_general">{{ usuario }}</td>
+		</tr>
+		<tr>
+		    <td id="tabla_label_general">Contraseña</td>
+		    <td id="tabla_input_general">{{ form.contrasenia }}</td> 
+		</tr>
+		<tr>
+		    <td id="tabla_label_general"></td>
+		    <td id="tabla_input_general" style="padding-top:20px;"><input type="submit" class="btn btn-primary btn-m" value="Guardar"> 
+		</tr>
+    
+     </form>
+    </table>
+        
+   
+</div>
+{% endblock %}

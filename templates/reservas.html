@@ -40,6 +40,8 @@
 				<td id="estado_reserva">En curso</td>
 				{% elif reserva.estado == 'F' %}
 				<td id="estado_reserva">Finalizado</td>
+				{% elif reserva.estado == 'S' %}
+				<td id="estado_reserva">Esperando Confirmacion</td>
 				{% endif %}
 				{% if reserva.estado_inicial == null %}
 				<td id="estado_reserva"> - </td>
@@ -68,6 +70,10 @@
 				    		<td id="estado_reserva" style="color:red; font-weight: bold;"> *se debe cobrar ${{ exceso.precio }} Por exceso de uso</td>
 				    	{% endif %}
 				    {% endfor %}
+				{% elif reserva.estado == 'R' %}
+				<td style="padding-left: 10px; padding-top: 10px;"> <button type="submit" class="save btn btn-success" value="solicitar" name="solicitar">Solicitar Confirmación</button>	
+	    		</td>
+	    		<td></td>
 				{% else %}
 				<td></td>
 				<td></td>

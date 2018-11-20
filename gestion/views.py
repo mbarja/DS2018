@@ -3,13 +3,25 @@ import datetime
 from .forms import *
 from gestion import *
 from django.contrib.auth import authenticate, login as dj_login, logout
-from django.contrib.auth.models import User
-from gestion.models import TipoUsuario
+from django.contrib.auth.models import User, Group
+from django.contrib.auth import update_session_auth_hash
 from django.db.models import Q
 from django.template.context_processors import request
 from _overlapped import NULL
 from django.shortcuts import get_object_or_404, redirect, render, reverse
 from http.cookiejar import request_path
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.core.mail import send_mail
+
+def not_in_tecnicos_group(user):
+    if user:
+        return user.groups.filter(name='tecnicos').count() != 0
+    return False
+
+def not_in_clientes_group(user):
+    if user:
+        return user.groups.filter(name='clientes').count() != 0
+    return False
 
 def logout_view(request, next_page):
     logout(request)
@@ -41,11 +53,11 @@ def home(request):
         
                 formTecnico.save()
                 
+                grupoTecnico = Group.objects.get(name='tecnicos') 
+                grupoTecnico.user_set.add(user)
+                
                 dj_login(request, user)
                 
-                tipo = TipoUsuario(tipo='T', usuario=usuario)
-                
-                tipo.save()
                 
                 return render(request, 'home_tecnico.html', {'fecha': fecha, 'usuario':usuario})
                 
@@ -76,11 +88,10 @@ def home(request):
             
                     formCliente.save()
                     
+                    grupoCliente = Group.objects.get(name='clientes') 
+                    grupoCliente.user_set.add(user)
+                    
                     dj_login(request, user)
-                    
-                    tipo = TipoUsuario(tipo='C', usuario=usuario)
-                    
-                    tipo.save()
                     
                     return render(request, 'home_cliente.html', {'fecha': fecha, 'usuario':usuario})
                 
@@ -107,7 +118,7 @@ def home(request):
                         
                         dj_login(request, user)
                             
-                        base = obtenerHtmlSegunTipoUsuario(usuario)
+                        base = obtenerHtmlSegunTipoUsuario(user)
                         
                         return render(request, base, {'fecha': fecha, 'usuario':usuario})
                     
@@ -123,28 +134,27 @@ def home(request):
         formCliente = ClienteForm()
         
         return render(request, 'home.html', {'fecha': fecha, 'formlogin':formlogin, 'formTecnico':formTecnico, 'formCliente':formCliente, 'errors':errors})
-    
-    
+        
 
-def obtenerHtmlSegunTipoUsuario(usuario):
+def obtenerHtmlSegunTipoUsuario(user):
     
-    tipo = TipoUsuario.objects.filter(usuario=usuario).values_list('tipo',flat=True) 
-    
-    if tipo[0]=='D':
-        return 'home_duenio.html'
-    
-    if tipo[0]=='T':
-        return 'home_tecnico.html'
-    if tipo[0]=='C':
-        return 'home_cliente.html'
-    
+    if user:
+        if user.groups.filter(name='tecnicos').count() != 0:
+            return 'home_tecnico.html'
+        elif user.groups.filter(name='clientes').count() != 0:
+            return 'home_cliente.html'
+        else:
+            return 'home_duenio.html'
+    return False   
 
+@login_required 
+@user_passes_test(lambda u: u.is_superuser, login_url='/home/')
 def alta_equipo(request):
     
     errors=[]
     fecha = datetime.datetime.now()
     
-    usuario = validarUsuarioRegistrado(request)
+    usuario = request.user.username
     
     if request.method == 'POST':
         
@@ -166,12 +176,14 @@ def alta_equipo(request):
     
     return render(request, 'alta_equipo.html', {'fecha': fecha, 'form':form, 'errors':errors, 'usuario':usuario})    
 
+@login_required 
+@user_passes_test(lambda u: u.is_superuser, login_url='/home/')
 def alta_tratamiento(request):
     
     errors=[]
     fecha = datetime.datetime.now()
     
-    usuario = validarUsuarioRegistrado(request)
+    usuario = request.user.username
     
     if request.method == 'POST':
         
@@ -193,19 +205,13 @@ def alta_tratamiento(request):
     
     return render(request, 'alta_tratamiento.html', {'fecha': fecha, 'form':form, 'errors':errors, 'usuario':usuario})    
 
+@login_required 
+@user_passes_test(lambda u: u.is_superuser, login_url='/home/')
 def alta_precio_uso(request):
     errors=[]
     fecha = datetime.datetime.now()
     
-    usuario = validarUsuarioRegistrado(request)
-    
-    if usuario==NULL:
-
-        formlogin = LoginForm()
-        
-        errors.append('Debe estar logueado en el sistema para poder dar de alta un equipo')
-        
-        return render(request, 'home.html', {'fecha': fecha, 'formlogin':formlogin, 'errores':errors})
+    usuario = request.user.username
     
     if request.method == 'POST':
         
@@ -245,20 +251,14 @@ def validarPrecioPorUso(form):
     
     else:
         return False
-    
+
+@login_required 
+@user_passes_test(lambda u: u.is_superuser, login_url='/home/')    
 def registrar_mantenimiento(request):
     errors=[]
     fecha = datetime.datetime.now()
     
-    usuario = validarUsuarioRegistrado(request)
-    
-    if usuario==NULL:
-
-        formlogin = LoginForm()
-        
-        errors.append('Debe estar logueado en el sistema para poder dar de alta un equipo')
-        
-        return render(request, 'home.html', {'fecha': fecha, 'formlogin':formlogin, 'errores':errors})
+    usuario = request.user.username
     
     if request.method == 'POST':
         
@@ -298,11 +298,13 @@ def validarMantenimiento(form):
     else:
         return False
     
+@login_required 
+@user_passes_test(lambda u: u.is_superuser, login_url='/home/')    
 def alta_equipo_tratamiento(request):
     errors=[]
     fecha = datetime.datetime.now()
     
-    usuario = validarUsuarioRegistrado(request)
+    usuario = request.user.username
     
     if request.method == 'POST':
         
@@ -342,11 +344,13 @@ def validarEquipoTratamiento(form):
     
     else:
         return False
-    
+
+@login_required 
+@user_passes_test(not_in_tecnicos_group, login_url='/home/')    
 def alquiler_equipos(request):
     errors = []
     fecha = datetime.datetime.now()
-    usuario = validarUsuarioRegistrado(request)
+    usuario = request.user.username
     
     if request.method == 'POST':
         
@@ -402,10 +406,58 @@ def validarDatosParaAlquiler(form, usuario):
     else:
         return NULL
 
+@login_required 
+@user_passes_test(not_in_tecnicos_group, login_url='/home/') 
+def editar_datos_tecnico(request):
+    fecha = datetime.datetime.now()
+    usuario = request.user.username
+    
+    if request.method == 'POST':
+        
+        dniTecnico = request.POST['id_tecnico']
+        
+        form = TecnicoModificarForm(data=request.POST)
+    
+        if form.is_valid():
+            
+            instance = form.save(commit=False)
+            
+            instance.dni = dniTecnico
+            
+            instance.usuario = usuario
+            
+            contrasenia = form.cleaned_data['contrasenia']
+            
+            user = request.user
+            
+            user.set_password(contrasenia)
+            
+            user.save()
+            
+            update_session_auth_hash(request, user)
+            
+            instance.save()
+            
+            return render(request, 'datos_editados_tecnico.html', {'fecha': fecha, 'usuario':usuario})
+    
+        else:
+            
+            return render(request, 'editar_datos_tecnico.html', {'fecha':fecha, 'usuario':usuario, 'form':form})
+        
+    
+    tecnico = Tecnico.objects.get(usuario=usuario)
+    
+    form = TecnicoModificarForm(instance=tecnico)
+
+    
+    return render(request, 'editar_datos_tecnico.html', {'fecha':fecha, 'dni':tecnico.dni, 'usuario': usuario, 'form':form})
+    
+@login_required 
+@user_passes_test(not_in_tecnicos_group, login_url='/home/')
 def estado_alquileres_tecnico(request):
     
     fecha = datetime.datetime.now()
-    usuario = validarUsuarioRegistrado(request)
+    usuario = request.user.username
     
     if 'id_alquiler' in request.GET:
         id_alquiler = request.GET['id_alquiler']
@@ -464,10 +516,12 @@ def registrarAlquiler(idEquipo, desde, hasta, dniUsuario):
     
     return alquiler
 
+@login_required 
+@user_passes_test(lambda u: u.is_superuser, login_url='/home/')
 def reservas(request):
     errors = []
     fecha = datetime.datetime.now()
-    usuario = validarUsuarioRegistrado(request)
+    usuario = request.user.username
     
     if 'id_alquiler' in request.GET:
         
@@ -496,13 +550,44 @@ def reservas(request):
                 nombreEquipo = alquiler.equipo
 
                 errors.append('Debe ingresar un estado final para poder finalizar el alquiler del equipo '+str(nombreEquipo))
-        
+                
+        if 'solicitar' in request.GET:
+            
+            tecnico = Tecnico.objects.get(nombre=alquiler.tecnico)
+            
+            enviarMail(alquiler,tecnico)
+            
+            alquiler.estado = 'S'
+            
         alquiler.save()
     
+    cancelarReservasVencidas()
     reservas = Alquiler.objects.all().order_by('-id')
     excesos = obtenerExcesosPorUso()
     return render(request, 'reservas.html', {'fecha': fecha, 'usuario':usuario, 'reservas':reservas, 'excesos':excesos, 'errores':errors})
 
+def cancelarReservasVencidas():
+    
+    reservas = Alquiler.objects.filter(Q(estado='S') | Q(estado='R'))
+    
+    for reserva in reservas:
+        
+        if reserva.desde <= date.today():
+                reserva.estado='O'
+                reserva.save()
+            
+
+def enviarMail(alquiler,tecnico):
+    
+    mensaje = 'Se solicita confirmar el alquiler del equipo '+str(alquiler.equipo)+'. Para las fechas '+ str(alquiler.desde)+' - '+str(alquiler.hasta)
+    send_mail(
+    'Confirmacion de alquiler',
+    mensaje,
+    'beauty.rent.info@gmail.com',
+    [str(tecnico.mail)],
+    fail_silently=False,
+)
+    
 def obtenerExcesosPorUso():
     
     excesos = []
@@ -513,7 +598,6 @@ def obtenerExcesosPorUso():
         
         pulsosUtilizados = (alquiler.estado_final - alquiler.estado_inicial)
         
-        print('pulsos utilizados: ', pulsosUtilizados)
        
         preciosPorUso = PrecioPorUso.objects.filter(equipo = alquiler.equipo).order_by('rango')
         
@@ -527,8 +611,7 @@ def obtenerExcesosPorUso():
                 precioPorExceso = precio.precio
                 rango = precio.rango
         
-        print('rango: ',rango)
-        print('precio por exceso: ', precioPorExceso)        
+        
         pulsosDeMas = pulsosUtilizados - rango
         
         if rango != 0:
@@ -552,9 +635,11 @@ def obtenerEstadoInicial(equipo):
             for a in alquiler:
                 return getattr(a, 'estado_final')
 
+@login_required 
+@user_passes_test(lambda u: u.is_superuser, login_url='/home/')
 def equipos_duenio(request):
     fecha = datetime.datetime.now()
-    usuario = validarUsuarioRegistrado(request)
+    usuario = request.user.username
     
     if request.method == 'GET':
         if 'id_equipo' in request.GET:
@@ -589,7 +674,6 @@ def equipos_duenio(request):
     
         else:
             
-            print(form.errors)
             return render(request, 'equipo_modificar.html', {'fecha':fecha, 'usuario':usuario, 'form':form})
         
     
@@ -601,9 +685,11 @@ def equipos_duenio(request):
     
     return render(request, 'equipos_duenio.html', {'fecha': fecha, 'usuario':usuario, 'equipos':equipos, 'estados':estados, 'pulsos': pulsos})
 
+@login_required 
+@user_passes_test(lambda u: u.is_superuser, login_url='/home/')
 def editarPreciosPorUso(request):
     fecha = datetime.datetime.now()
-    usuario = validarUsuarioRegistrado(request)
+    usuario = request.user.username
     
     mensaje = ""
     
@@ -643,6 +729,8 @@ def editarPreciosPorUso(request):
 
     return render(request, 'editar_precio_uso.html', {'fecha': fecha, 'usuario':usuario, 'equipos':equipos, 'mensaje':mensaje})
 
+@login_required 
+@user_passes_test(lambda u: u.is_superuser, login_url='/home/')
 def obtenerEstadosEquipos(equipos):   
     hoy = datetime.datetime.now()
     estados=[]
@@ -698,39 +786,46 @@ def obtenerPulsosParaMantenimiento(equipos):
         
     return mantenimientos
 
+@login_required 
+@user_passes_test(not_in_tecnicos_group, login_url='/home/')
 def equipos_tecnico(request):
     
     fecha = datetime.datetime.now()
-    usuario = validarUsuarioRegistrado(request)
+    usuario = request.user.username
     
     equipos = Equipo.objects.all()
     
     recargos = PrecioPorUso.objects.all()
 
     return render(request, 'equipos_tecnico.html', {'fecha': fecha, 'usuario':usuario, 'equipos':equipos, 'recargos':recargos})
-    
+
+@login_required 
+@user_passes_test(not_in_tecnicos_group, login_url='/home/')    
 def tratamientos_tecnico(request):
     fecha = datetime.datetime.now()
-    usuario = validarUsuarioRegistrado(request)
+    usuario = request.user.username
     
     equipos = EquipoTratamiento.objects.all()
     tratamientos = Tratamiento.objects.all()
     
     return render(request, 'tratamientos_tecnico.html', {'fecha': fecha, 'tratamientos': tratamientos, 'equipos':equipos, 'usuario':usuario})
-
+@login_required 
+@user_passes_test(not_in_clientes_group, login_url='/home/')
 def tratamientos_cliente(request):
     fecha = datetime.datetime.now()
-    usuario = validarUsuarioRegistrado(request)
+    usuario = request.user.username
     
     tratamientos = Tratamiento.objects.all()
     
     
     return render(request, 'tratamientos_cliente.html', {'fecha': fecha, 'tratamientos': tratamientos, 'usuario':usuario})
 
+@login_required 
+@user_passes_test(not_in_clientes_group, login_url='/home/')
 def reservar_turno(request):
     errors = []
     fecha = datetime.datetime.now()
-    usuario = validarUsuarioRegistrado(request)
+    usuario = request.user.username
     
     if request.method == 'POST':
         
@@ -766,8 +861,6 @@ def validarDatosParaTurno(form, usuario):
     
     tratamiento = Tratamiento.objects.filter(nombre=nombreTratamiento)[:1]
     
-    print(tratamiento)
-    
     cliente = Cliente.objects.filter(usuario=usuario)[:1]
 
     turno = Turno.objects.filter(cliente=cliente).filter(tratamiento=tratamiento).filter(fecha=datosfecha)
@@ -799,20 +892,25 @@ def equipos(request):
 
     return render(request, 'equipos_general.html', {'fecha': fecha, 'equipos':equipos, 'recargos':recargos})
 
-
+@login_required 
+@user_passes_test(not_in_tecnicos_group, login_url='/home/')
 def home_tecnico(request):
     fecha = datetime.datetime.now()
-    usuario = validarUsuarioRegistrado(request)
+    usuario = request.user.username
     return render(request, 'home_tecnico.html', {'fecha': fecha, 'usuario':usuario})
 
+@login_required 
+@user_passes_test(not_in_clientes_group, login_url='/home/')
 def home_cliente(request):
     fecha = datetime.datetime.now()
-    usuario = validarUsuarioRegistrado(request)
+    usuario = request.user.username
     return render(request, 'home_duenio.html', {'fecha': fecha, 'usuario':usuario})
 
+@login_required 
+@user_passes_test(lambda u: u.is_superuser, login_url='/home/')
 def home_duenio(request):
     fecha = datetime.datetime.now()
-    usuario = validarUsuarioRegistrado(request)
+    usuario = request.user.username
     return render(request, 'home_duenio.html', {'fecha': fecha, 'usuario':usuario})
 
 def tratamientos(request):
@@ -823,6 +921,8 @@ def tratamientos(request):
     
     return render(request, 'tratamientos_general.html', {'fecha': fecha, 'tratamientos': tratamientos, 'equipos':equipos})
 
+@login_required 
+@user_passes_test(lambda u: u.is_superuser, login_url='/home/')
 def tratamientos_duenio(request):
     fecha = datetime.datetime.now()
     return render(request, 'tratamientos_duenio.html', {'fecha': fecha})
@@ -831,13 +931,4 @@ def calendario(request):
     fecha = datetime.datetime.now()
     return render(request, 'fechas_disponibles.html', {'fecha': fecha})
 
-def validarUsuarioRegistrado(request):
-    
-    if request.user.is_authenticated:
-        
-        usuario = request.user.username
-        
-        return usuario
-    else:
-        return NULL
 

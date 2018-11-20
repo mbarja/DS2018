@@ -1,0 +1,15 @@
+{% extends "base_tecnico.html" %}
+{% block cuerpo %}
+
+<div class="container-fluid" style="width:80%">
+
+    {% csrf_token %}
+   <div class="jumbotron">
+	  <h1 class="display-4">Datos modificados con éxito!</h1>
+	  <p id="mensaje_reserva_exitosa" class="lead">Se han modificado sus datos en el sistema. </p>
+	  <hr class="my-4">
+	  <p id="mensaje_reserva_exitosa_precio" class="lead"></p>
+	  <a class="btn btn-primary btn-lg" href="../home_tecnico" role="button">Home</a>
+	</div>
+</div>
+{% endblock %}

@@ -26,6 +26,8 @@
 	  					<td id="estado_alquiler">En curso</td>
 	  					{% elif alquiler.estado == 'F' %}
 	  					<td id="estado_alquiler">Finalizado</td>
+	  					{% elif alquiler.estado == 'S' %}
+	  					<td id="estado_alquiler">Esperando Confirmación</td>
 		  				{% endif %}
 		  				</tr>
 		    		</table>
@@ -56,6 +58,11 @@
 	    		</div> 
 	    </td>
 	    {% if alquiler.estado == 'R' %}
+	    <td style="padding-left: 10px;"> <button type="submit" class="save btn btn-success" value="confirmar" name="confirmar">Confirmar</button>	
+	    </td>
+	    <td style="padding-left: 10px;"> <button type="submit" class="save btn btn-danger" value="cancelar" name="cancelar">Cancelar</button>	
+	    </td>
+	    {% elif alquiler.estado == 'S' %}
 	    <td style="padding-left: 10px;"> <button type="submit" class="save btn btn-success" value="confirmar" name="confirmar">Confirmar</button>	
 	    </td>
 	    <td style="padding-left: 10px;"> <button type="submit" class="save btn btn-danger" value="cancelar" name="cancelar">Cancelar</button>	
@@ -96,6 +103,10 @@ $( document ).ready(function() {
 	    if(cellText=='Cancelado'){
 	    	var parent = $(this).parent().closest('div').attr("id");
 	    	$($('#' + parent)).css("background-color", "#adad85");
+	    }
+	    if(cellText=='Esperando Confirmación'){
+	    	var parent = $(this).parent().closest('div').attr("id");
+	    	$($('#' + parent)).css("background-color", "#ff4d4d");
 	    }
 	});
 });

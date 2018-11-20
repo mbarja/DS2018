@@ -12,6 +12,7 @@ UNIDADES_MEDIDA = (
 ESTADOS = (
         ('R', 'Reservado'),
         ('C', 'Confirmado'),
+        ('S', 'Esperando Confirmacion'),
         ('E', 'En curso'),
         ('O', 'Cancelado'),
         ('F', 'Finalizado'),
@@ -58,13 +59,6 @@ class Cliente(models.Model):
     mail = models.CharField(max_length=50)
     usuario = models.CharField(max_length=10)
     contrasenia = models.CharField(max_length=30)
-
-class TipoUsuario(models.Model):
-    tipo = models.CharField(max_length=1, choices=TIPOS_USUARIO)
-    usuario = models.CharField(max_length=10)
-    
-    def __str__(self):
-        return '%s %s' % (self.tipo, self.usuario)
     
 class Equipo(models.Model):
     
