@@ -358,17 +358,24 @@ def alquiler_equipos(request):
         
         if form.is_valid():
             
-            alquiler = validarDatosParaAlquiler(form, usuario)
-            
-            if not alquiler:
-                errors.append('El equipo no esta disponible para las fechas elegidas')
-                return render(request, 'alquiler_equipos.html', {'fecha': fecha, 'form':form, 'errores':errors, 'usuario':usuario})
+            if validarFechas(form):
+                        
+                alquiler = validarDatosParaAlquiler(form, usuario)
                 
+                if not alquiler:
+                    errors.append('El equipo no esta disponible para las fechas elegidas')
+                    return render(request, 'alquiler_equipos.html', {'fecha': fecha, 'form':form, 'errores':errors, 'usuario':usuario})
+                    
+                else:
+                    equipo = getattr(alquiler, 'equipo')
+                    desde = getattr(alquiler, 'desde')
+                    hasta = getattr(alquiler, 'hasta')
+                    return render(request, 'alquiler_reservado.html', {'fecha': fecha, 'usuario':usuario, 'equipo':equipo, 'desde': desde, 'hasta':hasta})
+            
             else:
-                equipo = getattr(alquiler, 'equipo')
-                desde = getattr(alquiler, 'desde')
-                hasta = getattr(alquiler, 'hasta')
-                return render(request, 'alquiler_reservado.html', {'fecha': fecha, 'usuario':usuario, 'equipo':equipo, 'desde': desde, 'hasta':hasta})
+                errors.append('La fecha de inicial no puede ser previa a la fecha actual')
+                return render(request, 'alquiler_equipos.html', {'fecha': fecha, 'form':form, 'errores':errors, 'usuario':usuario})
+
                 
                 
             
@@ -380,6 +387,21 @@ def alquiler_equipos(request):
     
     return render(request, 'alquiler_equipos.html', {'fecha': fecha, 'usuario':usuario, 'form': form})
 
+def validarFechas(form):
+    fechas = str(form.cleaned_data['fechas'])
+    
+    fechasArreglo = fechas.split(' - ', 2)
+    
+    format_str = '%d/%m/%Y'
+    desde =  datetime.datetime.strptime(fechasArreglo[0], format_str)
+    hasta = datetime.datetime.strptime(fechasArreglo[1], format_str)
+    
+    if desde.date()<=date.today():
+        return False
+    
+    else:
+        return True
+    
 def validarDatosParaAlquiler(form, usuario):
     
     datosEquipo = str(form.cleaned_data['equipos'])
@@ -396,7 +418,6 @@ def validarDatosParaAlquiler(form, usuario):
     format_str = '%d/%m/%Y'
     desde =  datetime.datetime.strptime(fechasArreglo[0], format_str)
     hasta = datetime.datetime.strptime(fechasArreglo[1], format_str)
-    
    
     alquileres = Alquiler.objects.filter(equipo=equipo).filter(desde__range=[desde.date(), hasta.date()]).filter(hasta__range=[desde.date(), hasta.date()]).filter(~Q(estado = 'O'))
     
@@ -685,6 +706,7 @@ def equipos_duenio(request):
     
     return render(request, 'equipos_duenio.html', {'fecha': fecha, 'usuario':usuario, 'equipos':equipos, 'estados':estados, 'pulsos': pulsos})
 
+
 @login_required 
 @user_passes_test(lambda u: u.is_superuser, login_url='/home/')
 def editarPreciosPorUso(request):
@@ -729,8 +751,6 @@ def editarPreciosPorUso(request):
 
     return render(request, 'editar_precio_uso.html', {'fecha': fecha, 'usuario':usuario, 'equipos':equipos, 'mensaje':mensaje})
 
-@login_required 
-@user_passes_test(lambda u: u.is_superuser, login_url='/home/')
 def obtenerEstadosEquipos(equipos):   
     hoy = datetime.datetime.now()
     estados=[]
@@ -753,6 +773,8 @@ def obtenerEstadosEquipos(equipos):
                     estadoAlquiler = 'Confirmado'
                 if estadoAlquiler=='E':
                     estadoAlquiler = 'En Curso'
+                if estadoAlquiler=='S':
+                    estadoAlquiler = 'Esperando Confirmacion'
                 
                 estado = {'equipo':equipo, 'estado':estadoAlquiler}
                 estados.append(estado)
