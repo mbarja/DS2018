@@ -8,7 +8,7 @@ from django.contrib.auth import update_session_auth_hash
 from django.db.models import Q
 from django.template.context_processors import request
 from _overlapped import NULL
-from django.shortcuts import get_object_or_404, redirect, render, reverse
+from django.shortcuts import get_object_or_404, redirect, render, reverse, HttpResponseRedirect
 from http.cookiejar import request_path
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.mail import send_mail
@@ -988,12 +988,116 @@ def registrarTurno(tratamiento,fecha, cliente):
 
 def equipos(request):
     fecha = datetime.datetime.now()
-   
+    errors=[]
+    
     equipos = Equipo.objects.all()
     
     recargos = PrecioPorUso.objects.all()
+    
+    if request.method == 'POST':
+        formTecnico = TecnicoForm(request.POST)
+         
+    
+        if formTecnico.is_valid():
+             
+            usuario = formTecnico.cleaned_data['usuario']
+    
+            contrasenia = formTecnico.cleaned_data['contrasenia']
+    
+            user = User.objects.filter(username=usuario)
+             
+            if not user:
+                 
+                user = User.objects.create_user(username=usuario, password=contrasenia)
+                 
+                tecnico = formTecnico.save(commit=False)
+         
+                formTecnico.save()
+                 
+                grupoTecnico = Group.objects.get(name='tecnicos') 
+                grupoTecnico.user_set.add(user)
+                 
+                dj_login(request, user)
+                 
+                 
+                return render(request, 'home_tecnico.html', {'fecha': fecha, 'usuario':usuario})
+                 
+             
+            else:
+                 
+                errors.append('El usuario ya existe en el sistema')
+                 
+                return render(request, 'equipos_general.html', {'fecha': fecha, 'equipos':equipos, 'recargos':recargos,'formTecnico':formTecnico, 'errores':errors})
+                 
+        else:
+             
+            formCliente = ClienteForm(request.POST)
+             
+            if formCliente.is_valid():
+                 
+                usuario = formCliente.cleaned_data['usuario']
+     
+                contrasenia = formCliente.cleaned_data['contrasenia']
+     
+                user = User.objects.filter(username=usuario)
+                 
+                if not user:
+                     
+                    user = User.objects.create_user(username=usuario, password=contrasenia)
+                     
+                    Cliente = formCliente.save(commit=False)
+             
+                    formCliente.save()
+                     
+                    grupoCliente = Group.objects.get(name='clientes') 
+                    grupoCliente.user_set.add(user)
+                     
+                    dj_login(request, user)
+                     
+                    return render(request, 'home_cliente.html', {'fecha': fecha, 'usuario':usuario})
+                 
+                else:
+                     
+                    errors.append('El usuario ya existe en el sistema')
+                     
+                    return render(request, 'equipos_general.html', {'fecha': fecha,'equipos':equipos, 'recargos':recargos, 'formCliente':formCliente, 'errores':errors})
+                     
+         
+            else:
+                 
+                formlogin = LoginForm(request.POST)
+                 
+                if formlogin.is_valid():
+             
+                    usuario = formlogin.cleaned_data['user']
+         
+                    contrasenia = formlogin.cleaned_data['pswd']
+         
+                    user = authenticate(username=usuario, password=contrasenia)
+                     
+                    if user is not None:
+                         
+                        dj_login(request, user)
+                             
+                        base = obtenerHtmlSegunTipoUsuario(user)
+                         
+                        return render(request, base, {'fecha': fecha, 'usuario':usuario})
+                     
+                    else:
+                        
+                        errors.append('El usuario o contraseña no son válidos')
+                         
+                        return render(request, 'equipos_general.html', {'fecha': fecha, 'equipos':equipos, 'recargos':recargos,'formlogin':formlogin, 'errores':errors})
+         
+    
+     
+    formTecnico = TecnicoForm()
+    formlogin = LoginForm()
+    formCliente = ClienteForm()
+   
+    
 
-    return render(request, 'equipos_general.html', {'fecha': fecha, 'equipos':equipos, 'recargos':recargos})
+    return render(request, 'equipos_general.html', {'fecha': fecha, 'equipos':equipos, 'recargos':recargos, 'formlogin':formlogin, 'formTecnico':formTecnico, 'formCliente':formCliente})
 
 @login_required 
 @user_passes_test(not_in_tecnicos_group, login_url='/home/')
@@ -1018,11 +1122,113 @@ def home_duenio(request):
 
 def tratamientos(request):
     fecha = datetime.datetime.now()
+    errors=[]
     
     equipos = EquipoTratamiento.objects.all()
     tratamientos = Tratamiento.objects.all()
     
-    return render(request, 'tratamientos_general.html', {'fecha': fecha, 'tratamientos': tratamientos, 'equipos':equipos})
+    if request.method == 'POST':
+        formTecnico = TecnicoForm(request.POST)
+         
+    
+        if formTecnico.is_valid():
+             
+            usuario = formTecnico.cleaned_data['usuario']
+    
+            contrasenia = formTecnico.cleaned_data['contrasenia']
+    
+            user = User.objects.filter(username=usuario)
+             
+            if not user:
+                 
+                user = User.objects.create_user(username=usuario, password=contrasenia)
+                 
+                tecnico = formTecnico.save(commit=False)
+         
+                formTecnico.save()
+                 
+                grupoTecnico = Group.objects.get(name='tecnicos') 
+                grupoTecnico.user_set.add(user)
+                 
+                dj_login(request, user)
+                 
+                 
+                return render(request, 'home_tecnico.html', {'fecha': fecha, 'usuario':usuario})
+                 
+             
+            else:
+                 
+                errors.append('El usuario ya existe en el sistema')
+                 
+                return render(request, 'tratamientos_general.html', {'fecha': fecha, 'tratamientos': tratamientos, 'equipos':equipos, 'formTecnico':formTecnico, 'errores':errors})
+                 
+        else:
+             
+            formCliente = ClienteForm(request.POST)
+             
+            if formCliente.is_valid():
+                 
+                usuario = formCliente.cleaned_data['usuario']
+     
+                contrasenia = formCliente.cleaned_data['contrasenia']
+     
+                user = User.objects.filter(username=usuario)
+                 
+                if not user:
+                     
+                    user = User.objects.create_user(username=usuario, password=contrasenia)
+                     
+                    Cliente = formCliente.save(commit=False)
+             
+                    formCliente.save()
+                     
+                    grupoCliente = Group.objects.get(name='clientes') 
+                    grupoCliente.user_set.add(user)
+                     
+                    dj_login(request, user)
+                     
+                    return render(request, 'home_cliente.html', {'fecha': fecha, 'usuario':usuario})
+                 
+                else:
+                     
+                    errors.append('El usuario ya existe en el sistema')
+                     
+                    return render(request, 'tratamientos_general.html', {'fecha': fecha, 'tratamientos': tratamientos, 'equipos':equipos, 'formCliente':formCliente, 'errores':errors})
+                     
+         
+            else:
+                 
+                formlogin = LoginForm(request.POST)
+                 
+                if formlogin.is_valid():
+             
+                    usuario = formlogin.cleaned_data['user']
+         
+                    contrasenia = formlogin.cleaned_data['pswd']
+         
+                    user = authenticate(username=usuario, password=contrasenia)
+                     
+                    if user is not None:
+                         
+                        dj_login(request, user)
+                             
+                        base = obtenerHtmlSegunTipoUsuario(user)
+                         
+                        return render(request, base, {'fecha': fecha, 'usuario':usuario})
+                     
+                    else:
+                        
+                        errors.append('El usuario o contraseña no son válidos')
+                         
+                        return render(request, 'tratamientos_general.html', {'fecha': fecha, 'tratamientos': tratamientos, 'equipos':equipos, 'formlogin':formlogin, 'errores':errors})
+         
+
+     
+    formTecnico = TecnicoForm()
+    formlogin = LoginForm()
+    formCliente = ClienteForm()
+     
+    return render(request, 'tratamientos_general.html', {'fecha': fecha, 'tratamientos': tratamientos, 'equipos':equipos, 'formlogin':formlogin, 'formTecnico':formTecnico, 'formCliente':formCliente,})
 
 @login_required 
 @user_passes_test(lambda u: u.is_superuser, login_url='/home/')
