@@ -418,9 +418,9 @@ def validarDatosParaAlquiler(form, usuario):
     format_str = '%d/%m/%Y'
     desde =  datetime.datetime.strptime(fechasArreglo[0], format_str)
     hasta = datetime.datetime.strptime(fechasArreglo[1], format_str)
-   
-    alquileres = Alquiler.objects.filter(equipo=equipo).filter(desde__range=[desde.date(), hasta.date()]).filter(hasta__range=[desde.date(), hasta.date()]).filter(~Q(estado = 'O'))
     
+    alquileres = Alquiler.objects.filter(equipo=equipo).filter(Q(desde__range=[desde.date(), hasta.date()])| Q(hasta__range=[desde.date(), hasta.date()])).filter(~Q(estado = 'O')).filter(~Q(estado='F'))
+   
     if not alquileres:
         alquiler = registrarAlquiler(equipo, desde, hasta, dniUsuario)
         return alquiler
@@ -502,28 +502,8 @@ def estado_alquileres_tecnico(request):
     
     alquileres = Alquiler.objects.filter(tecnico=dniUsuario).order_by('-id')
     
-    precios = calcularPreciosAlquileres(alquileres)
-    
-    excesos = obtenerExcesosPorUso()
-    
-    return render(request, 'estado_alquileres_tecnico.html', {'fecha': fecha, 'usuario':usuario, 'alquileres':alquileres, 'precios':precios, 'excesos': excesos})
+    return render(request, 'estado_alquileres_tecnico.html', {'fecha': fecha, 'usuario':usuario, 'alquileres':alquileres})
 
-def calcularPreciosAlquileres(alquileres):
-    precios = []
-    
-    for alquiler in alquileres:
-        
-        equipo = getattr(alquiler, 'equipo')
-        precio = getattr(equipo, 'precio_dia')
-        desde = getattr(alquiler, 'desde')
-        hasta = getattr(alquiler, 'hasta')
-        
-        cantidad_dias = (hasta - desde).days
-
-        precio = {'alquiler':alquiler, 'precio':(cantidad_dias*precio)}
-        precios.append(precio)
-        
-    return precios
            
 def registrarAlquiler(idEquipo, desde, hasta, dniUsuario):
     
@@ -531,7 +511,13 @@ def registrarAlquiler(idEquipo, desde, hasta, dniUsuario):
     
     tecnico = Tecnico.objects.get(dni=dniUsuario)
     
-    alquiler = Alquiler(tecnico=tecnico, equipo=equipo, desde=desde.date(), hasta=hasta.date(), estado='R' )
+    precioEquipo = equipo.precio_dia
+    
+    cantidad_dias = (hasta.date() - desde.date()).days
+    
+    precioAlquiler=(precioEquipo*cantidad_dias)
+    
+    alquiler = Alquiler(tecnico=tecnico, equipo=equipo, desde=desde.date(), hasta=hasta.date(), precio = precioAlquiler, estado='R' )
     
     alquiler.save()
     
@@ -553,20 +539,36 @@ def reservas(request):
         alquiler.id = id_alquiler
         
         if 'iniciar' in request.GET:
-            #no pueden estar mas de un equipo en curso al mismo tiempo
             chequearAlquiler =  Alquiler.objects.filter(equipo=alquiler.equipo).filter(estado='E').filter(~Q(id = alquiler.id))
             
             if not chequearAlquiler:
-                alquiler.estado = 'E'
-                alquiler.estado_inicial = obtenerEstadoInicial(alquiler.equipo)
+                fechaInicial = request.GET['fecha_inicial_valor']
+                
+                if validarFechaNoFutura(fechaInicial):
+                    if validarAlquileresEnCurso(fechaInicial, alquiler.equipo):
+                        alquiler = iniciarAlquiler(alquiler, fechaInicial)
+                    else:
+                        errors.append('No se puede iniciar el alquiler de '+ str(alquiler.equipo) + 'con fecha '+str(fechaInicial)+'. Se superpone con otro alquiler')
+                else:
+                    errors.append('No se puede ingresar una fecha FUTURA')
+                
             else: 
                 errors.append('Ya hay alquiler en curso para el equipo '+str(alquiler.equipo))
         
         if 'finalizar' in request.GET:
+            
             estadoFinal = request.GET['estado_final_valor']
+            fechaFinal = request.GET['fecha_final_valor']
+            
             if estadoFinal:
-                alquiler.estado_final = estadoFinal
-                alquiler.estado = 'F'
+                if validarFechaNoFutura(fechaFinal):
+                    if validarAlquileresEnCurso(fechaFinal, alquiler.equipo):
+                        alquiler = finalizarAlquiler(alquiler, estadoFinal, fechaFinal)
+                    else:
+                        errors.append('No se puede iniciar el alquiler de '+ str(alquiler.equipo) + 'con fecha '+str(fechaFinal)+'. Se superpone con otro alquiler')
+                    
+                else:
+                    errors.append('No se puede ingresar una fecha FUTURA')
             else:
                 nombreEquipo = alquiler.equipo
 
@@ -579,14 +581,100 @@ def reservas(request):
             enviarMail(alquiler,tecnico)
             
             alquiler.estado = 'S'
+        
+        if 'pagar' in request.GET:
+            
+            valorPagado = request.GET['precio_pagado']
+            
+            alquiler.pagado = valorPagado
+            
+            alquiler.estado = 'P'
             
         alquiler.save()
     
     cancelarReservasVencidas()
     reservas = Alquiler.objects.all().order_by('-id')
-    excesos = obtenerExcesosPorUso()
-    return render(request, 'reservas.html', {'fecha': fecha, 'usuario':usuario, 'reservas':reservas, 'excesos':excesos, 'errores':errors})
+    return render(request, 'reservas.html', {'fecha': fecha, 'usuario':usuario, 'reservas':reservas, 'errores':errors})
 
+def validarAlquileresEnCurso(fecha, equipo):
+    
+    format_str = '%Y-%m-%d'
+    fecha =  datetime.datetime.strptime(fecha, format_str)
+    
+    alquileres = Alquiler.objects.filter(equipo=equipo).filter(desde__lt= fecha.date()).filter(hasta__gt=fecha.date())
+    
+    if not alquileres:
+        return True
+    else:
+        return False
+    
+def validarFechaNoFutura(fecha):
+    
+    format_str = '%Y-%m-%d'
+    fecha =  datetime.datetime.strptime(fecha, format_str)
+    
+    if fecha.date()>date.today():
+        return False
+    
+    else:
+        return True
+    
+    
+def iniciarAlquiler(alquiler, fechaInicial):
+    
+    alquiler.estado = 'E'
+    alquiler.estado_inicial = obtenerEstadoInicial(alquiler.equipo)
+    
+    format_str = '%Y-%m-%d'
+    fechaInicial =  datetime.datetime.strptime(fechaInicial, format_str)
+    
+    if(alquiler.desde != fechaInicial.date()):
+        
+        alquiler.desde = fechaInicial.date()
+        
+        equipo = (getattr(alquiler, 'equipo'))
+        num_serie = (getattr(equipo, 'num_serie'))
+        
+        equipo = Equipo.objects.get(num_serie=num_serie)
+    
+        precioEquipo = equipo.precio_dia
+    
+        cantidad_dias = (alquiler.hasta - alquiler.desde).days
+    
+        precioAlquiler=(precioEquipo*cantidad_dias)
+        
+        alquiler.precio = precioAlquiler
+    
+    return alquiler
+        
+def finalizarAlquiler(alquiler, estadoFinal, fechaFinal):
+    
+    alquiler.estado_final = estadoFinal
+    alquiler.estado = 'F'
+    
+    format_str = '%Y-%m-%d'
+    fechaFinal =  datetime.datetime.strptime(fechaFinal, format_str)
+    
+    if(alquiler.hasta != fechaFinal.date()):
+        
+        alquiler.hasta = fechaFinal.date()
+        
+        equipo = (getattr(alquiler, 'equipo'))
+        num_serie = (getattr(equipo, 'num_serie'))
+        
+        equipo = Equipo.objects.get(num_serie=num_serie)
+    
+        precioEquipo = equipo.precio_dia
+    
+        cantidad_dias = (alquiler.hasta - alquiler.desde).days
+        
+        alquiler.precio = (precioEquipo*cantidad_dias)
+        
+        alquiler.precio_exceso = obtenerExcesosPorUso(alquiler)
+    
+    return alquiler
+    
+    
 def cancelarReservasVencidas():
     
     reservas = Alquiler.objects.filter(Q(estado='S') | Q(estado='R'))
@@ -609,38 +697,31 @@ def enviarMail(alquiler,tecnico):
     fail_silently=False,
 )
     
-def obtenerExcesosPorUso():
+def obtenerExcesosPorUso(alquiler):
+        
+    pulsosUtilizados = (int(alquiler.estado_final) - int(alquiler.estado_inicial))
     
-    excesos = []
+    preciosPorUso = PrecioPorUso.objects.filter(equipo = alquiler.equipo).order_by('rango')
     
-    alquileres = Alquiler.objects.filter(estado='F')
+    precioPorExceso = 0
+    rango=0
     
-    for alquiler in alquileres:
+    for precio in preciosPorUso:
         
-        pulsosUtilizados = (alquiler.estado_final - alquiler.estado_inicial)
-        
-       
-        preciosPorUso = PrecioPorUso.objects.filter(equipo = alquiler.equipo).order_by('rango')
-        
-        precioPorExceso = 0
-        rango=0
-        
-        for precio in preciosPorUso:
+        if pulsosUtilizados > precio.rango:
             
-            if pulsosUtilizados > precio.rango:
-                
-                precioPorExceso = precio.precio
-                rango = precio.rango
+            precioPorExceso = precio.precio
+            rango = precio.rango
+    
+    
+    pulsosDeMas = pulsosUtilizados - rango
+    
+    if rango != 0:
         
-        
-        pulsosDeMas = pulsosUtilizados - rango
-        
-        if rango != 0:
-            
-           excesos.append({'alquiler':alquiler, 'precio':(pulsosDeMas*precioPorExceso)})     
-               
-        
-    return excesos
+       return (pulsosDeMas*precioPorExceso)   
+           
+    
+    return ''
 
 def obtenerEstadoInicial(equipo):
     

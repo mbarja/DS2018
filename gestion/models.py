@@ -16,6 +16,7 @@ ESTADOS = (
         ('E', 'En curso'),
         ('O', 'Cancelado'),
         ('F', 'Finalizado'),
+        ('P', 'Pagado'),
     )
 TIPOS_USUARIO = (
         ('C', 'Cliente'),
@@ -101,6 +102,9 @@ class Alquiler(models.Model):
     estado = models.CharField(max_length=1, choices=ESTADOS)
     estado_inicial = models.BigIntegerField(null=True, blank=True,validators=[negativo])
     estado_final = models.BigIntegerField(null=True, blank=True, validators=[negativo])
+    precio = models.FloatField(validators=[negativo])
+    precio_exceso = models.FloatField(validators=[negativo], null=True, blank=True)
+    pagado = models.FloatField(validators=[negativo], null=True, blank=True)
     
     def __str__(self):
         return '%s %s' % (self.equipo, self.estado)

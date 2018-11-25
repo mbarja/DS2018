@@ -46,13 +46,7 @@
 		  				</tr>
 		  				<tr>
 		  					<td><b>Precio:  </b></td>
-		  					{% for precio in precios %}
-		  					 {% if precio.alquiler == alquiler %}
-		               			
-			  					<td>$ {{ precio.precio }}</td>
-			  				{% endif %}
-			  					 
-			             {% endfor %}
+			  				<td>$ {{ alquiler.precio }}</td>
 		  				</tr>
 		    		</table>
 	    		</div> 
@@ -71,12 +65,13 @@
 	     <td style="padding-left: 10px;"><button type="submit" class="save btn btn-danger" value="cancelar" name="cancelar">Cancelar</button>	
 	    </td>
 	    {% elif alquiler.estado == 'F' %}
-	    {% for exceso in excesos %}
-				    	{% if exceso.alquiler == alquiler %}
+				    	{% if equipo.precio_exceso %}
 				    		<td></td>
-				    		<td id="estado_reserva" style="color:red; font-weight: bold;"> *se debe pagar ${{ exceso.precio }} Por exceso de uso</td>
+				    		<td id="estado_reserva" style="color:red; font-weight: bold;"> *se debe pagar ${{ equipo.exceso_precio }} Por exceso de uso</td>
 				    	{% endif %}
-				    {% endfor %}
+		{% elif alquiler.estado == 'P' %}
+		<td></td>
+		<td id="estado_reserva" style="color:black; font-weight: bold;"> Se pago ${{ equipo.pagado }}</td>
 	    {% endif %}
 	 </tr>
 	 </form>
