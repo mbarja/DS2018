@@ -1,0 +1,43 @@
+{% extends "base_cliente.html" %}
+{% load static %}
+
+{% block cuerpo %}
+
+<div class="container-fluid" style="width:100%">
+<p style="font-size:30px;font-family: 'Indie Flower', cursive;">Turnos Reservados
+ </p>
+ <br>
+ 
+ <table class="table" style="width:100%; color:black">
+  <thead>
+            <tr>
+                <th id="estado_reserva_titulo">Tratamiento</th>
+                <th id="estado_reserva_titulo">Fecha</th>
+                <th id="estado_reserva_titulo">Técnicos disponibles</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for turno in turnos %}
+        <tr>
+        		<td id="estado_reserva"> {{ turno.tratamiento }}</td>
+        		<td id="estado_reserva"> {{ turno.fecha }}</td>
+        		<td id="estado_reserva">
+        		<table>
+        		{% for tecnico in tecnicos %}
+        			<tr>
+        			{% if tecnico.turno == turno %}
+        				
+        				<td style="font-weight: bold; padding-left:15px;">Técnico:</td><td style="padding-left:15px;"> {{tecnico.nombre_tecnico }}</td>
+        				<td style="font-weight: bold; padding-left:15px;">Teléfono:</td><td style="padding-left:15px;"> {{tecnico.telefono_tecnico }}</td>
+        				<td style="font-weight: bold; padding-left:15px;">Dirección:</td><td style="padding-left:15px;"> {{tecnico.direccion_tecnico }}</td>
+        			{% endif %}
+        			</tr>
+        		{% endfor %}
+        		</table>
+        		</td>
+       </tr>
+       {% endfor %}
+       </tbody>
+       </table>
+</div>
+{% endblock %}

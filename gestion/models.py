@@ -61,6 +61,9 @@ class Cliente(models.Model):
     usuario = models.CharField(max_length=10)
     contrasenia = models.CharField(max_length=30)
     
+    def __str__(self):
+        return '%s %s' % (self.nombre, self.telefono)
+    
 class Equipo(models.Model):
     
     num_serie = models.IntegerField(primary_key=True, unique=True, error_messages={'unique':"Ya existe un equipo con este numero de serie"})

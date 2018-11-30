@@ -28,6 +28,8 @@
 	  					<td id="estado_alquiler">Finalizado</td>
 	  					{% elif alquiler.estado == 'S' %}
 	  					<td id="estado_alquiler">Esperando Confirmación</td>
+	  					{% elif alquiler.estado == 'P' %}
+	  					<td id="estado_alquiler">Pagado</td>
 		  				{% endif %}
 		  				</tr>
 		    		</table>
@@ -65,13 +67,13 @@
 	     <td style="padding-left: 10px;"><button type="submit" class="save btn btn-danger" value="cancelar" name="cancelar">Cancelar</button>	
 	    </td>
 	    {% elif alquiler.estado == 'F' %}
-				    	{% if equipo.precio_exceso %}
+				    	{% if alquiler.precio_exceso %}
 				    		<td></td>
-				    		<td id="estado_reserva" style="color:red; font-weight: bold;"> *se debe pagar ${{ equipo.exceso_precio }} Por exceso de uso</td>
+				    		<td id="estado_reserva" style="color:red; font-weight: bold;"> *se debe pagar ${{ alquiler.exceso_precio }} Por exceso de uso</td>
 				    	{% endif %}
 		{% elif alquiler.estado == 'P' %}
 		<td></td>
-		<td id="estado_reserva" style="color:black; font-weight: bold;"> Se pago ${{ equipo.pagado }}</td>
+		<td id="estado_reserva" style="color:black; font-weight: bold;"> Se pago ${{ alquiler.pagado }}</td>
 	    {% endif %}
 	 </tr>
 	 </form>
@@ -102,6 +104,10 @@ $( document ).ready(function() {
 	    if(cellText=='Esperando Confirmación'){
 	    	var parent = $(this).parent().closest('div').attr("id");
 	    	$($('#' + parent)).css("background-color", "#ff4d4d");
+	    }
+	    if(cellText=='Pagado'){
+	    	var parent = $(this).parent().closest('div').attr("id");
+	    	$($('#' + parent)).css("background-color", "#f9c2f7");
 	    }
 	});
 });
